@@ -102,7 +102,7 @@ Maybe start with 5m or 10m if 15m feels like a lot. For longer sessions where I�
 
 4. I’ve always felt that the font and size should reflect the mood of my writing. I’m kinda weird like that. But maybe there are other weird people like me out there haha.
 
-For example, for more emotional entries I like a larger “24px Lato”.
+For example, for more emotional entries I like a larger "24px Arial".
 If I’m thinking through a new business idea, I prefer a more official-looking “18px Serif”. I also added the random button to help you find the vibe you’re looking for.
 
 5. Click the clock on the bottom right to see your history. It’s all saved locally. Click the file path at the top to open it in Finder.
