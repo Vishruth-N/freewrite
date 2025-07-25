@@ -10,6 +10,8 @@ import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
 import PDFKit
+import Speech
+import AVFoundation
 
 struct HumanEntry: Identifiable {
     let id: UUID
@@ -86,6 +88,17 @@ struct ContentView: View {
     @State private var lastTypingTime: Date? = nil // Track when user last typed
     @State private var typingTimer: Timer? = nil // Timer to detect when typing stops
     @State private var timerZoomScale: CGFloat = 1.0 // Add zoom scale for timer
+    
+    // Dictation state variables
+    @State private var isRecording = false
+    @State private var isHoveringDictation = false
+    @State private var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    @State private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    @State private var recognitionTask: SFSpeechRecognitionTask?
+    @State private var audioEngine = AVAudioEngine()
+    @State private var baseTextBeforeDictation = ""
+    @State private var currentPartialText = ""
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let entryHeight: CGFloat = 40
     
@@ -115,9 +128,8 @@ struct ContentView: View {
         if !FileManager.default.fileExists(atPath: directory.path) {
             do {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-                print("Successfully created Freewrite directory")
             } catch {
-                print("Error creating directory: \(error)")
+                // Directory creation failed, but we'll continue
             }
         }
         
@@ -168,14 +180,10 @@ struct ContentView: View {
         let documentsDirectory = getDocumentsDirectory()
         let fileURL = documentsDirectory.appendingPathComponent("entry.md")
         
-        print("Attempting to save file to: \(fileURL.path)")
-        
         do {
             try text.write(to: fileURL, atomically: true, encoding: .utf8)
-            print("Successfully saved file")
         } catch {
-            print("Error saving file: \(error)")
-            print("Error details: \(error.localizedDescription)")
+            // File save failed - could show user notification here if needed
         }
     }
     
@@ -184,42 +192,30 @@ struct ContentView: View {
         let documentsDirectory = getDocumentsDirectory()
         let fileURL = documentsDirectory.appendingPathComponent("entry.md")
         
-        print("Attempting to load file from: \(fileURL.path)")
-        
         do {
             if fileManager.fileExists(atPath: fileURL.path) {
                 text = try String(contentsOf: fileURL, encoding: .utf8)
-                print("Successfully loaded file")
-            } else {
-                print("File does not exist yet")
             }
         } catch {
-            print("Error loading file: \(error)")
-            print("Error details: \(error.localizedDescription)")
+            // File load failed - will use empty text
         }
     }
     
     // Add function to load existing entries
     private func loadExistingEntries() {
         let documentsDirectory = getDocumentsDirectory()
-        print("Looking for entries in: \(documentsDirectory.path)")
-        
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: documentsDirectory, includingPropertiesForKeys: nil)
             let mdFiles = fileURLs.filter { $0.pathExtension == "md" }
             
-            print("Found \(mdFiles.count) .md files")
-            
             // Process each file
             let entriesWithDates = mdFiles.compactMap { fileURL -> (entry: HumanEntry, date: Date, content: String)? in
                 let filename = fileURL.lastPathComponent
-                print("Processing: \(filename)")
                 
                 // Extract UUID and date from filename - pattern [uuid]-[yyyy-MM-dd-HH-mm-ss].md
                 guard let uuidMatch = filename.range(of: "\\[(.*?)\\]", options: .regularExpression),
                       let dateMatch = filename.range(of: "\\[(\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{2})\\]", options: .regularExpression),
                       let uuid = UUID(uuidString: String(filename[uuidMatch].dropFirst().dropLast())) else {
-                    print("Failed to extract UUID or date from filename: \(filename)")
                     return nil
                 }
                 
@@ -229,7 +225,6 @@ struct ContentView: View {
                 dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
                 
                 guard let fileDate = dateFormatter.date(from: dateString) else {
-                    print("Failed to parse date from filename: \(filename)")
                     return nil
                 }
                 
@@ -256,7 +251,6 @@ struct ContentView: View {
                         content: content  // Store the full content to check for welcome message
                     )
                 } catch {
-                    print("Error reading file: \(error)")
                     return nil
                 }
             }
@@ -266,7 +260,7 @@ struct ContentView: View {
                 .sorted { $0.date > $1.date }  // Sort by actual date from filename
                 .map { $0.entry }
             
-            print("Successfully loaded and sorted \(entries.count) entries")
+            // Successfully loaded and sorted entries
             
             // Check if we need to create a new entry
             let calendar = Calendar.current
@@ -297,11 +291,11 @@ struct ContentView: View {
             
             if entries.isEmpty {
                 // First time user - create entry with welcome message
-                print("First time user, creating welcome entry")
+                // First time user - creating welcome entry
                 createNewEntry()
             } else if !hasEmptyEntryToday && !hasOnlyWelcomeEntry {
                 // No empty entry for today and not just the welcome entry - create new entry
-                print("No empty entry for today, creating new entry")
+                // No empty entry for today - creating new entry
                 createNewEntry()
             } else {
                 // Select the most recent empty entry from today or the welcome entry
@@ -332,8 +326,7 @@ struct ContentView: View {
             }
             
         } catch {
-            print("Error loading directory contents: \(error)")
-            print("Creating default entry after error")
+            // Error loading directory contents - creating default entry
             createNewEntry()
         }
     }
@@ -811,6 +804,30 @@ struct ContentView: View {
                 .foregroundColor(.gray)
             
             Button(action: {
+                if isRecording {
+                    stopDictation()
+                } else {
+                    startDictation()
+                }
+            }) {
+                Image(systemName: isRecording ? "mic.fill" : "mic")
+                    .foregroundColor(isRecording ? .red : (isHoveringDictation ? textHoverColor : textColor))
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                isHoveringDictation = hovering
+                isHoveringBottomNav = hovering
+                if hovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            
+            Text("•")
+                .foregroundColor(.gray)
+            
+            Button(action: {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     showingSidebar.toggle()
                 }
@@ -1064,7 +1081,7 @@ struct ContentView: View {
                 entries[index].previewText = truncated
             }
         } catch {
-            print("Error updating preview text: \(error)")
+            // Error updating preview text
         }
     }
     
@@ -1074,10 +1091,10 @@ struct ContentView: View {
         
         do {
             try text.write(to: fileURL, atomically: true, encoding: .utf8)
-            print("Successfully saved entry: \(entry.filename)")
+            // Successfully saved entry
             updatePreviewText(for: entry)  // Update preview after saving
         } catch {
-            print("Error saving entry: \(error)")
+            // Error saving entry
         }
     }
     
@@ -1088,10 +1105,10 @@ struct ContentView: View {
         do {
             if fileManager.fileExists(atPath: fileURL.path) {
                 text = try String(contentsOf: fileURL, encoding: .utf8)
-                print("Successfully loaded entry: \(entry.filename)")
+                // Successfully loaded entry
             }
         } catch {
-            print("Error loading entry: \(error)")
+            // Error loading entry
         }
     }
     
@@ -1148,7 +1165,7 @@ struct ContentView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(fullText, forType: .string)
-        print("Prompt copied to clipboard")
+        // Prompt copied to clipboard
     }
     
     private func handleTextChange() {
@@ -1179,7 +1196,7 @@ struct ContentView: View {
         
         do {
             try fileManager.removeItem(at: fileURL)
-            print("Successfully deleted file: \(entry.filename)")
+            // Successfully deleted file
             
             // Remove the entry from the entries array
             if let index = entries.firstIndex(where: { $0.id == entry.id }) {
@@ -1196,7 +1213,7 @@ struct ContentView: View {
                 }
             }
         } catch {
-            print("Error deleting file: \(error)")
+            // Error deleting file
         }
     }
     
@@ -1263,11 +1280,11 @@ struct ContentView: View {
                 // Create PDF data
                 if let pdfData = createPDFFromText(text: entryContent) {
                     try pdfData.write(to: url)
-                    print("Successfully exported PDF to: \(url.path)")
+                    // Successfully exported PDF
                 }
             }
         } catch {
-            print("Error in PDF export: \(error)")
+            // Error in PDF export
         }
     }
     
@@ -1310,7 +1327,6 @@ struct ContentView: View {
         
         // Create a PDF context with the data consumer
         guard let pdfContext = CGContext(consumer: CGDataConsumer(data: pdfData as CFMutableData)!, mediaBox: nil, nil) else {
-            print("Failed to create PDF context")
             return nil
         }
         
@@ -1354,7 +1370,6 @@ struct ContentView: View {
             
             // Safety check - don't allow infinite loops
             if pageIndex > 1000 {
-                print("Safety limit reached - stopping PDF generation")
                 break
             }
         }
@@ -1363,6 +1378,142 @@ struct ContentView: View {
         pdfContext.closePDF()
         
         return pdfData as Data
+    }
+    
+    // MARK: - Dictation Functions
+    
+    private func startDictation() {
+        // Check if speech recognizer is available
+        guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            return
+        }
+        
+        // Request speech recognition authorization
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            DispatchQueue.main.async {
+                if authStatus == .authorized {
+                    self.startRecording()
+                }
+            }
+        }
+    }
+    
+    private func startRecording() {
+        // Check if speech recognizer is available
+        guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            return
+        }
+        
+        // Stop any existing recording
+        if isRecording {
+            stopRecording()
+        }
+        
+        // Cancel any previous task
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        
+        // Create recognition request
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        guard let recognitionRequest = recognitionRequest else {
+            return
+        }
+        
+        recognitionRequest.shouldReportPartialResults = true
+        
+        // Get audio input node
+        let inputNode = audioEngine.inputNode
+        
+        // Remove any existing tap
+        inputNode.removeTap(onBus: 0)
+        
+        // Store the current text as base before starting dictation
+        baseTextBeforeDictation = text
+        
+        // Create recognition task
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
+            DispatchQueue.main.async {
+                // Don't process results if we're no longer recording
+                guard self.isRecording else { return }
+                
+                if let result = result {
+                    // Get the transcribed text
+                    let transcribedText = result.bestTranscription.formattedString
+                    
+                    if result.isFinal {
+                        // For final results, append to base text permanently
+                        self.text = self.baseTextBeforeDictation + transcribedText + " "
+                        self.currentPartialText = ""
+                    } else {
+                        // For partial results, show them temporarily
+                        self.currentPartialText = transcribedText
+                        self.text = self.baseTextBeforeDictation + transcribedText
+                    }
+                }
+                
+                if error != nil {
+                    // Only call stopRecording if we're still recording to avoid recursion
+                    if self.isRecording {
+                        self.stopRecording()
+                    }
+                }
+                
+                if result?.isFinal == true {
+                    self.stopRecording()
+                }
+            }
+        }
+        
+        // Configure audio format
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            self.recognitionRequest?.append(buffer)
+        }
+        
+        // Start audio engine
+        audioEngine.prepare()
+        do {
+            try audioEngine.start()
+            isRecording = true
+        } catch {
+            stopRecording()
+        }
+    }
+    
+    private func stopDictation() {
+        stopRecording()
+    }
+    
+    private func stopRecording() {
+        guard isRecording else { return }
+        
+        // Stop audio engine
+        if audioEngine.isRunning {
+            audioEngine.stop()
+        }
+        
+        // Remove tap safely
+        audioEngine.inputNode.removeTap(onBus: 0)
+        
+        // End recognition request
+        recognitionRequest?.endAudio()
+        recognitionRequest = nil
+        
+        // Cancel recognition task
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        
+        // Clean up partial text state
+        // Keep the current text as is - it already contains the transcribed content
+        // Only add a space if we have transcribed content beyond the base text
+        if text.count > baseTextBeforeDictation.count && !text.hasSuffix(" ") {
+            text += " "
+        }
+        
+        currentPartialText = ""
+        baseTextBeforeDictation = ""
+        
+        isRecording = false
     }
 }
 
