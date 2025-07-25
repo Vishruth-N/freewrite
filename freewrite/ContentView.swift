@@ -360,8 +360,8 @@ struct ContentView: View {
     }
     
     var lineHeight: CGFloat {
-        // Use a simple multiplier for consistent line spacing
-        return fontSize * 0.4
+        // Use a simple multiplier for consistent line spacing (reduced for shorter cursor)
+        return fontSize * 0.3
     }
     
     var fontSizeButtonTitle: String {
@@ -394,11 +394,11 @@ struct ContentView: View {
     }
     
     private var backgroundColor: Color {
-        Color(colorScheme == .light ? .white : .black)
+        colorScheme == .light ? Color(red: 0.992, green: 0.992, blue: 0.992) : Color(red: 0.08, green: 0.08, blue: 0.08)
     }
     
     private var textEditorForegroundColor: Color {
-        colorScheme == .light ? Color(red: 0.20, green: 0.20, blue: 0.20) : Color(red: 0.9, green: 0.9, blue: 0.9)
+        colorScheme == .light ? Color(red: 0.165, green: 0.165, blue: 0.165) : Color(red: 0.9, green: 0.9, blue: 0.9)
     }
     
     private var placeholderColor: Color {
@@ -421,6 +421,7 @@ struct ContentView: View {
             .padding(.bottom, bottomNavOpacity > 0 ? 68 : 0)
             .ignoresSafeArea()
             .colorScheme(colorScheme)
+            .tint(cursorColor)
             .onAppear {
                 placeholderText = placeholderOptions.randomElement() ?? "Begin writing"
             }
@@ -598,13 +599,7 @@ struct ContentView: View {
                     return event
                 }
                 
-                // Add keyboard event monitoring to disable backspace when timer is running
-                NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                    if timerIsRunning && event.keyCode == 51 { // 51 is the key code for backspace
-                        return nil // Block the backspace event
-                    }
-                    return event
-                }
+                // Keyboard event monitoring for backspace is now enabled
                 
                 // Add keyboard event monitoring for ESC key to exit fullscreen
                 NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
@@ -866,7 +861,7 @@ struct ContentView: View {
                 bottomNavigationView
             }
             .padding()
-            .background(Color(colorScheme == .light ? .white : .black))
+            .background(backgroundColor)
             .opacity(bottomNavOpacity)
             .onHover { hovering in
                 isHoveringBottomNav = hovering
@@ -887,33 +882,30 @@ struct ContentView: View {
                 
                 VStack(spacing: 0) {
                     // Header
-                    Button(action: {
-                        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: getDocumentsDirectory().path)
-                    }) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack(spacing: 4) {
-                                    Text("History")
-                                        .font(.system(size: 13))
-                                        .foregroundColor(isHoveringHistory ? textHoverColor : textColor)
-                                    Image(systemName: "arrow.up.right")
-                                        .font(.system(size: 10))
-                                        .foregroundColor(isHoveringHistory ? textHoverColor : textColor)
-                                }
-                                Text(getDocumentsDirectory().path)
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                            }
-                            Spacer()
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Notes")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.primary)
+                            Text("\(entries.count) notes")
+                                .font(.system(size: 13))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Button(action: {
+                            NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: getDocumentsDirectory().path)
+                        }) {
+                            Image(systemName: "folder")
+                                .font(.system(size: 16))
+                                .foregroundColor(isHoveringHistory ? .primary : .secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .onHover { hovering in
+                            isHoveringHistory = hovering
                         }
                     }
-                    .buttonStyle(.plain)
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .onHover { hovering in
-                        isHoveringHistory = hovering
-                    }
+                    .padding(.vertical, 16)
                     
                     Divider()
                     
@@ -934,74 +926,50 @@ struct ContentView: View {
                                     }
                                 }) {
                                     HStack(alignment: .top) {
-                                        VStack(alignment: .leading, spacing: 4) {
+                                        VStack(alignment: .leading, spacing: 6) {
                                             HStack {
-                                                Text(entry.previewText)
-                                                    .font(.system(size: 13))
+                                                Text(entry.previewText.isEmpty ? "New Note" : entry.previewText)
+                                                    .font(.system(size: 15, weight: .medium))
                                                     .lineLimit(1)
-                                                    .foregroundColor(.primary)
+                                                    .foregroundColor(entry.id == selectedEntryId ? 
+                                                        (colorScheme == .dark ? .black : .primary) : .primary)
                                                 
                                                 Spacer()
                                                 
-                                                // Export/Trash icons that appear on hover
+                                                // Trash icon that appears on hover
                                                 if hoveredEntryId == entry.id {
-                                                    HStack(spacing: 8) {
-                                                        // Export PDF button
-                                                        Button(action: {
-                                                            exportEntryAsPDF(entry: entry)
-                                                        }) {
-                                                            Image(systemName: "arrow.down.circle")
-                                                                .font(.system(size: 11))
-                                                                .foregroundColor(hoveredExportId == entry.id ? 
-                                                                    (colorScheme == .light ? .black : .white) : 
-                                                                    (colorScheme == .light ? .gray : .gray.opacity(0.8)))
+                                                    Button(action: {
+                                                        deleteEntry(entry: entry)
+                                                    }) {
+                                                        Image(systemName: "trash")
+                                                            .font(.system(size: 12))
+                                                            .foregroundColor(hoveredTrashId == entry.id ? .red : .secondary)
+                                                    }
+                                                    .buttonStyle(.plain)
+                                                    .onHover { hovering in
+                                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                                            hoveredTrashId = hovering ? entry.id : nil
                                                         }
-                                                        .buttonStyle(.plain)
-                                                        .help("Export entry as PDF")
-                                                        .onHover { hovering in
-                                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                                hoveredExportId = hovering ? entry.id : nil
-                                                            }
-                                                            if hovering {
-                                                                NSCursor.pointingHand.push()
-                                                            } else {
-                                                                NSCursor.pop()
-                                                            }
-                                                        }
-                                                        
-                                                        // Trash icon
-                                                        Button(action: {
-                                                            deleteEntry(entry: entry)
-                                                        }) {
-                                                            Image(systemName: "trash")
-                                                                .font(.system(size: 11))
-                                                                .foregroundColor(hoveredTrashId == entry.id ? .red : .gray)
-                                                        }
-                                                        .buttonStyle(.plain)
-                                                        .onHover { hovering in
-                                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                                hoveredTrashId = hovering ? entry.id : nil
-                                                            }
-                                                            if hovering {
-                                                                NSCursor.pointingHand.push()
-                                                            } else {
-                                                                NSCursor.pop()
-                                                            }
+                                                        if hovering {
+                                                            NSCursor.pointingHand.push()
+                                                        } else {
+                                                            NSCursor.pop()
                                                         }
                                                     }
                                                 }
                                             }
                                             
                                             Text(entry.date)
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.secondary)
+                                                .font(.system(size: 13))
+                                                .foregroundColor(entry.id == selectedEntryId && colorScheme == .dark ? 
+                                                    .black.opacity(0.7) : .secondary)
                                         }
                                     }
-                                    .frame(maxWidth: .infinity)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
+                                    .padding(.vertical, 12)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 4)
+                                        Rectangle()
                                             .fill(backgroundColor(for: entry))
                                     )
                                 }
@@ -1025,8 +993,8 @@ struct ContentView: View {
                     }
                     .scrollIndicators(.never)
                 }
-                .frame(width: 200)
-                .background(Color(colorScheme == .light ? .white : NSColor.black))
+                .frame(width: 300)
+                .background(Color(NSColor.controlBackgroundColor))
             }
         }
         .frame(minWidth: 1100, minHeight: 600)
@@ -1058,11 +1026,23 @@ struct ContentView: View {
 
     }
     
+    private var cursorColor: Color {
+        colorScheme == .light ? Color(red: 0.078, green: 0.502, blue: 0.969) : Color(red: 1.0, green: 0.871, blue: 0.408)
+    }
+    
     private func backgroundColor(for entry: HumanEntry) -> Color {
         if entry.id == selectedEntryId {
-            return Color.gray.opacity(0.1)  // More subtle selection highlight
+            if colorScheme == .dark {
+                return Color(red: 1.0, green: 0.871, blue: 0.408).opacity(0.7) // #FFDE68 selection for dark mode
+            } else {
+                return Color(red: 0.545, green: 0.761, blue: 1.0) // #8BC2FF selection for light mode
+            }
         } else if entry.id == hoveredEntryId {
-            return Color.gray.opacity(0.05)  // Even more subtle hover state
+            if colorScheme == .dark {
+                return Color.white.opacity(0.05)
+            } else {
+                return Color.black.opacity(0.05)
+            }
         } else {
             return Color.clear
         }
