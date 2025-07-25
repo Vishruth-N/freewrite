@@ -85,6 +85,7 @@ struct ContentView: View {
     @State private var didCopyPrompt: Bool = false // Add state for copy prompt feedback
     @State private var lastTypingTime: Date? = nil // Track when user last typed
     @State private var typingTimer: Timer? = nil // Timer to detect when typing stops
+    @State private var timerZoomScale: CGFloat = 1.0 // Add zoom scale for timer
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let entryHeight: CGFloat = 40
     
@@ -553,13 +554,20 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
             .foregroundColor(timerColor)
+            .scaleEffect(timerZoomScale)
             .onHover { hovering in
                 isHoveringTimer = hovering
                 isHoveringBottomNav = hovering
                 if hovering {
                     NSCursor.pointingHand.push()
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        timerZoomScale = 1.1
+                    }
                 } else {
                     NSCursor.pop()
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        timerZoomScale = 1.0
+                    }
                 }
             }
             .onAppear {
@@ -570,11 +578,21 @@ struct ContentView: View {
                         if abs(scrollBuffer) >= 0.1 {
                             let currentMinutes = timeRemaining / 60
                             NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .now)
-                            let direction = -scrollBuffer > 0 ? 5 : -5
+                            let direction = -scrollBuffer > 0 ? 2 : -2
                             let newMinutes = currentMinutes + direction
-                            let roundedMinutes = (newMinutes / 5) * 5
+                            let roundedMinutes = (newMinutes / 2) * 2
                             let newTime = roundedMinutes * 60
                             timeRemaining = min(max(newTime, 0), 2700)
+                            
+                            // Add zoom pulse effect when scrolling
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                timerZoomScale = 1.2
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                withAnimation(.easeInOut(duration: 0.15)) {
+                                    timerZoomScale = isHoveringTimer ? 1.1 : 1.0
+                                }
+                            }
                         }
                     }
                     return event
