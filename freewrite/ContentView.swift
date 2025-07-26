@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 import PDFKit
 import Speech
 import AVFoundation
+import AVKit
 
 struct HumanEntry: Identifiable {
     let id: UUID
@@ -1399,6 +1400,33 @@ struct ContentView: View {
     }
     
     private func startRecording() {
+        // Check if speech recognizer is available
+        guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
+            return
+        }
+        
+        // Request microphone permission first (macOS compatible)
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        case .authorized:
+            proceedWithRecording()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .audio) { granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self.proceedWithRecording()
+                    } else {
+                        print("Microphone permission denied")
+                    }
+                }
+            }
+        case .denied, .restricted:
+            print("Microphone permission denied")
+        @unknown default:
+            print("Unknown microphone permission status")
+        }
+    }
+    
+    private func proceedWithRecording() {
         // Check if speech recognizer is available
         guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
             return
