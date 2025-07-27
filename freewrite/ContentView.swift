@@ -99,6 +99,8 @@ struct ContentView: View {
     @State private var audioEngine = AVAudioEngine()
     @State private var baseTextBeforeDictation = ""
     @State private var currentPartialText = ""
+    @State private var userEditedDuringRecording = false
+    @State private var isProcessingUserEdit = false
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let entryHeight: CGFloat = 40
@@ -1173,6 +1175,17 @@ struct ContentView: View {
         let now = Date()
         lastTypingTime = now
         
+        // Only mark as user edited if the text change wasn't from speech recognition
+        if isRecording {
+            let expectedText = baseTextBeforeDictation + currentPartialText
+            if text != expectedText {
+                // This is a manual edit, not from speech recognition
+                userEditedDuringRecording = true
+                baseTextBeforeDictation = text
+                currentPartialText = ""
+            }
+        }
+        
         // Start timer if not already running and text is not empty
         if !timerIsRunning && !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             timerIsRunning = true
@@ -1457,6 +1470,8 @@ struct ContentView: View {
         
         // Store the current text as base before starting dictation
         baseTextBeforeDictation = text
+        userEditedDuringRecording = false
+        isProcessingUserEdit = false
         
         // Create recognition task
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
@@ -1465,13 +1480,42 @@ struct ContentView: View {
                 guard self.isRecording else { return }
                 
                 if let result = result {
+                    // Skip processing if we're handling a user edit
+                    guard !self.isProcessingUserEdit else { return }
+                    
                     // Get the transcribed text
                     let transcribedText = result.bestTranscription.formattedString
                     
-                    if result.isFinal {
-                        // For final results, append to base text permanently
-                        self.text = self.baseTextBeforeDictation + transcribedText + " "
+                    // If user edited during recording, immediately restart
+                    if self.userEditedDuringRecording {
+                        self.isProcessingUserEdit = true
+                        // Update base text to current text before restarting
+                        self.baseTextBeforeDictation = self.text
                         self.currentPartialText = ""
+                        self.userEditedDuringRecording = false
+                        self.stopRecording()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            self.isProcessingUserEdit = false
+                            self.startRecording()
+                        }
+                        return
+                    }
+                    
+                    if result.isFinal {
+                        // For final results, simply append to base text
+                        if !transcribedText.isEmpty {
+                            self.text = self.baseTextBeforeDictation + transcribedText + " "
+                            self.baseTextBeforeDictation = self.text
+                        }
+                        self.currentPartialText = ""
+                        
+                        // Immediately restart recognition to clear context
+                        self.isProcessingUserEdit = true
+                        self.stopRecording()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            self.isProcessingUserEdit = false
+                            self.startRecording()
+                        }
                     } else {
                         // For partial results, show them temporarily
                         self.currentPartialText = transcribedText
@@ -1486,9 +1530,7 @@ struct ContentView: View {
                     }
                 }
                 
-                if result?.isFinal == true {
-                    self.stopRecording()
-                }
+                // Don't auto-stop here since we handle final results above
             }
         }
         
@@ -1540,6 +1582,8 @@ struct ContentView: View {
         
         currentPartialText = ""
         baseTextBeforeDictation = ""
+        userEditedDuringRecording = false
+        isProcessingUserEdit = false
         
         isRecording = false
     }
