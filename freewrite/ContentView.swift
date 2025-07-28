@@ -43,13 +43,6 @@ struct ContentView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let availableFonts = NSFontManager.shared.availableFontFamilies
     
-    init() {
-        // Initialize speech service callbacks
-        speechService.onTextUpdate = { [self] newText in
-            text = newText
-        }
-    }
-    
     private func loadExistingEntries() {
         entries = fileService.loadExistingEntries()
         
@@ -184,6 +177,15 @@ struct ContentView: View {
             showingSidebar = false
             loadExistingEntries()
             setupKeyboardEvents()
+            
+            // Setup speech service callback after view is initialized
+            speechService.onTextUpdate = { newText in
+                print("🎤 Speech callback received text: '\(newText)'")
+                DispatchQueue.main.async {
+                    print("🎤 Updating text state to: '\(newText)'")
+                    self.text = newText
+                }
+            }
         }
         .onChange(of: text) { _ in
             saveCurrentEntry()
