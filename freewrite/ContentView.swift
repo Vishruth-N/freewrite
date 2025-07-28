@@ -166,6 +166,7 @@ struct ContentView: View {
                     selectedEntryId: $selectedEntryId,
                     onSelectEntry: selectEntry,
                     onDeleteEntry: deleteEntry,
+                    onExportEntry: exportEntryAsPDF,
                     fileService: fileService
                 )
             }
@@ -180,9 +181,7 @@ struct ContentView: View {
             
             // Setup speech service callback after view is initialized
             speechService.onTextUpdate = { newText in
-                print("🎤 Speech callback received text: '\(newText)'")
                 DispatchQueue.main.async {
-                    print("🎤 Updating text state to: '\(newText)'")
                     self.text = newText
                 }
             }
@@ -301,6 +300,18 @@ struct ContentView: View {
         }
     }
     
+    private func exportEntryAsPDF(_ entry: HumanEntry) {
+        if let content = fileService.loadEntry(entry: entry) {
+            pdfExportService.exportEntryAsPDF(
+                entry: entry,
+                content: content,
+                selectedFont: selectedFont,
+                fontSize: fontSize,
+                lineHeight: 4.0
+            )
+        }
+    }
+    
     private func handleTextChange() {
         let now = Date()
         lastTypingTime = now
@@ -321,43 +332,6 @@ struct ContentView: View {
                 self.timerIsRunning = false
             }
         }
-    }
-}
-// MARK: - Helper Functions
-
-
-// Helper function to calculate line height
-func getLineHeight(font: NSFont) -> CGFloat {
-    return font.ascender - font.descender + font.leading
-}
-
-// Add helper extension to find NSTextView
-extension NSView {
-    func findTextView() -> NSView? {
-        if self is NSTextView {
-            return self
-        }
-        for subview in subviews {
-            if let textView = subview.findTextView() {
-                return textView
-            }
-        }
-        return nil
-    }
-}
-
-// Add helper extension for finding subviews of a specific type
-extension NSView {
-    func findSubview<T: NSView>(ofType type: T.Type) -> T? {
-        if let typedSelf = self as? T {
-            return typedSelf
-        }
-        for subview in subviews {
-            if let found = subview.findSubview(ofType: type) {
-                return found
-            }
-        }
-        return nil
     }
 }
 

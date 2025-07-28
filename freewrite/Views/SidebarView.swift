@@ -5,10 +5,12 @@ struct SidebarView: View {
     @Binding var selectedEntryId: UUID?
     @State private var hoveredEntryId: UUID? = nil
     @State private var hoveredTrashId: UUID? = nil
+    @State private var hoveredExportId: UUID? = nil
     @State private var isHoveringHistory = false
     
     let onSelectEntry: (HumanEntry) -> Void
     let onDeleteEntry: (HumanEntry) -> Void
+    let onExportEntry: (HumanEntry) -> Void
     let fileService: FileService
     
     @Environment(\.colorScheme) var colorScheme
@@ -63,25 +65,50 @@ struct SidebarView: View {
                                         
                                         Spacer()
                                         
-                                        // Trash icon that appears on hover
+                                        // Export and Trash icons that appear on hover
                                         if hoveredEntryId == entry.id {
-                                            Button(action: {
-                                                onDeleteEntry(entry)
-                                            }) {
-                                                Image(systemName: "trash")
-                                                    .font(.system(size: 12))
-                                                    .foregroundColor(hoveredTrashId == entry.id ? .red : .secondary)
-                                            }
-                                            .buttonStyle(.plain)
-                                            .onHover { hovering in
-                                                withAnimation(.easeInOut(duration: 0.2)) {
-                                                    hoveredTrashId = hovering ? entry.id : nil
+                                            HStack(spacing: 8) {
+                                                // PDF Export button
+                                                Button(action: {
+                                                    onExportEntry(entry)
+                                                }) {
+                                                    Image(systemName: "square.and.arrow.up")
+                                                        .font(.system(size: 12))
+                                                        .foregroundColor(hoveredExportId == entry.id ? .blue : .secondary)
                                                 }
-                                                if hovering {
-                                                    NSCursor.pointingHand.push()
-                                                } else {
-                                                    NSCursor.pop()
+                                                .buttonStyle(.plain)
+                                                .onHover { hovering in
+                                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                                        hoveredExportId = hovering ? entry.id : nil
+                                                    }
+                                                    if hovering {
+                                                        NSCursor.pointingHand.push()
+                                                    } else {
+                                                        NSCursor.pop()
+                                                    }
                                                 }
+                                                .help("Export as PDF")
+                                                
+                                                // Trash button
+                                                Button(action: {
+                                                    onDeleteEntry(entry)
+                                                }) {
+                                                    Image(systemName: "trash")
+                                                        .font(.system(size: 12))
+                                                        .foregroundColor(hoveredTrashId == entry.id ? .red : .secondary)
+                                                }
+                                                .buttonStyle(.plain)
+                                                .onHover { hovering in
+                                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                                        hoveredTrashId = hovering ? entry.id : nil
+                                                    }
+                                                    if hovering {
+                                                        NSCursor.pointingHand.push()
+                                                    } else {
+                                                        NSCursor.pop()
+                                                    }
+                                                }
+                                                .help("Delete entry")
                                             }
                                         }
                                     }
