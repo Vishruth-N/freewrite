@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2800F7412DA1CEA0008FE5F9 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 2800F7402DA1CE9A008FE5F9 /* .gitignore */; };
+		68CD3E052E3771A900241BAE /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 68CD3E042E3771A900241BAE /* LiveKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68CD3E052E3771A900241BAE /* LiveKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 				2857D4722D5F8A8000EE1012 /* freewrite */,
 				2857D4842D5F8A8100EE1012 /* freewriteTests */,
 				2857D48E2D5F8A8100EE1012 /* freewriteUITests */,
+				68CD3E032E3771A900241BAE /* Frameworks */,
 				2857D4712D5F8A8000EE1012 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,6 +99,13 @@
 				2857D48B2D5F8A8100EE1012 /* freewriteUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		68CD3E032E3771A900241BAE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,6 +128,7 @@
 			);
 			name = freewrite;
 			packageProductDependencies = (
+				68CD3E042E3771A900241BAE /* LiveKit */,
 			);
 			productName = freewrite;
 			productReference = 2857D4702D5F8A8000EE1012 /* freewrite.app */;
@@ -201,6 +212,9 @@
 			);
 			mainGroup = 2857D4672D5F8A8000EE1012;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				68CD3D1C2E36B96500241BAE /* XCRemoteSwiftPackageReference "client-sdk-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2857D4712D5F8A8000EE1012 /* Products */;
 			projectDirPath = "";
@@ -614,6 +628,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		68CD3D1C2E36B96500241BAE /* XCRemoteSwiftPackageReference "client-sdk-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/livekit/client-sdk-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		68CD3E042E3771A900241BAE /* LiveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 68CD3D1C2E36B96500241BAE /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
+			productName = LiveKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2857D4682D5F8A8000EE1012 /* Project object */;
 }
