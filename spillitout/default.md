@@ -6,7 +6,7 @@ I beg of you.
 
 It’s 5 min max.
 
-My name is Farza.
+My name is Vishruth.
 
 I made this app.
 
