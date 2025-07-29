@@ -1,0 +1,171 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld notes" : {
+
+    },
+    "•" : {
+
+    },
+    "agent.listening" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agent is listening, start talking"
+          }
+        }
+      }
+    },
+    "Arial" : {
+
+    },
+    "Back to Writing" : {
+
+    },
+    "Chat" : {
+
+    },
+    "ChatGPT" : {
+
+    },
+    "Claude" : {
+
+    },
+    "Click to select this entry" : {
+
+    },
+    "connect.connecting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting"
+          }
+        }
+      }
+    },
+    "connect.simulator" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Running on Simulator, functionality may be limited."
+          }
+        }
+      }
+    },
+    "connect.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start call"
+          }
+        }
+      }
+    },
+    "connect.tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Need help getting set up? Check out the [Voice AI quickstart](https://docs.livekit.io/agents/start/voice-ai/)."
+          }
+        }
+      }
+    },
+    "Copied!" : {
+
+    },
+    "Copy Prompt" : {
+
+    },
+    "Delete entry" : {
+
+    },
+    "error.ok" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "error.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        }
+      }
+    },
+    "Export as PDF" : {
+
+    },
+    "Hey, your entry is long. It'll break the URL. Instead, copy prompt by clicking below and paste into AI of your choice!" : {
+
+    },
+    "message.placeholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message"
+          }
+        }
+      }
+    },
+    "New Entry" : {
+
+    },
+    "Notes" : {
+
+    },
+    "Please free write for at minimum 5 minutes first. Then click this. Trust." : {
+
+    },
+    "Reflect" : {
+
+    },
+    "Serif" : {
+
+    },
+    "warning.reconnecting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trying to reconnect"
+          }
+        }
+      }
+    },
+    "warning.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warning"
+          }
+        }
+      }
+    },
+    "Yo. Sorry, you can't chat with the guide lol. Please write your own entry." : {
+
+    }
+  },
+  "version" : "1.0"
+}

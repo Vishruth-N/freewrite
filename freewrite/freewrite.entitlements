@@ -10,8 +10,18 @@
     <true/>
     <key>com.apple.security.device.audio-input</key>
     <true/>
+    <key>com.apple.security.device.camera</key>
+    <true/>
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <key>com.apple.security.network.server</key>
+    <true/>
     <key>com.apple.security.speech-recognition</key>
     <true/>
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.com.arcline.voiceagent</string>
+    </array>
     <key>com.apple.security.temporary-exception.files.absolute-path.read-only</key>
     <array>
         <string>/Library/Preferences/com.apple.applicationaccess.plist</string>

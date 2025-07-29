@@ -44,6 +44,28 @@ struct AppSettings {
     """
 }
 
+enum AppMode {
+    case writing
+    case voiceAgent
+}
+
+@MainActor
+class AppState: ObservableObject {
+    @Published var currentMode: AppMode = .writing
+    
+    static let shared = AppState()
+    
+    private init() {}
+    
+    func switchToVoiceAgent() {
+        currentMode = .voiceAgent
+    }
+    
+    func switchToWriting() {
+        currentMode = .writing
+    }
+}
+
 class PreferencesService: ObservableObject {
     @Published var colorScheme: ColorScheme
     

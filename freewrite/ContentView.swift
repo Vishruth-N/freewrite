@@ -33,6 +33,9 @@ struct ContentView: View {
     @State private var lastTypingTime: Date? = nil
     @State private var typingTimer: Timer? = nil
     
+    // App state for navigation
+    @StateObject private var appState = AppState.shared
+    
     // Services
     @StateObject private var fileService = FileService()
     @StateObject private var speechService = SpeechService()
@@ -137,7 +140,9 @@ struct ContentView: View {
         }
     }
     
-    var body: some View {
+    // MARK: - View Components
+    
+    private var writingView: some View {
         HStack(spacing: 0) {
             // Main content
             ZStack {
@@ -174,6 +179,23 @@ struct ContentView: View {
         .frame(minWidth: 1100, minHeight: 600)
         .animation(.easeInOut(duration: 0.2), value: showingSidebar)
         .preferredColorScheme(preferencesService.colorScheme)
+    }
+    
+    private var voiceAgentView: some View {
+        VoiceAgentWrapperView(appState: appState)
+            .frame(minWidth: 1100, minHeight: 600)
+            .preferredColorScheme(preferencesService.colorScheme)
+    }
+
+    var body: some View {
+        Group {
+            switch appState.currentMode {
+            case .writing:
+                writingView
+            case .voiceAgent:
+                voiceAgentView
+            }
+        }
         .onAppear {
             showingSidebar = false
             loadExistingEntries()
@@ -330,6 +352,45 @@ struct ContentView: View {
         typingTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             if self.timerIsRunning {
                 self.timerIsRunning = false
+            }
+        }
+    }
+}
+
+// MARK: - VoiceAgent Wrapper View
+
+struct VoiceAgentWrapperView: View {
+    @ObservedObject var appState: AppState
+    @State private var viewModel = AppViewModel()
+    
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            // VoiceAgent content
+            AppView()
+                .environment(viewModel)
+            
+            // Back button
+            VStack {
+                HStack {
+                    Button(action: {
+                        appState.switchToWriting()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text("Back to Writing")
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.regularMaterial)
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding()
+                
+                Spacer()
             }
         }
     }

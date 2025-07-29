@@ -18,7 +18,9 @@ struct UtilityButtonsSection: View {
     @State private var isHoveringThemeToggle = false
     @State private var isHoveringDictation = false
     @State private var isHoveringClock = false
+    @State private var isHoveringReflect = false
     
+    @StateObject private var appState = AppState.shared
     @Environment(\.colorScheme) var colorScheme
     
     private var textColor: Color {
@@ -115,6 +117,27 @@ struct UtilityButtonsSection: View {
             .buttonStyle(.plain)
             .onHover { hovering in
                 isHoveringDictation = hovering
+                onBottomNavHover(hovering)
+                if hovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            
+            Text("•")
+                .foregroundColor(.gray)
+            
+            Button(action: {
+                appState.switchToVoiceAgent()
+            }) {
+                Text("Reflect")
+                    .font(.system(size: 13))
+                    .foregroundColor(isHoveringReflect ? textHoverColor : textColor)
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                isHoveringReflect = hovering
                 onBottomNavHover(hovering)
                 if hovering {
                     NSCursor.pointingHand.push()
