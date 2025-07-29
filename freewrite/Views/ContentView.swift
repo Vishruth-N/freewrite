@@ -181,10 +181,23 @@ struct ContentView: View {
         .preferredColorScheme(preferencesService.colorScheme)
     }
     
+    private var reflectionSelectionView: some View {
+        ReflectionSelectionView(
+            appState: appState,
+            currentText: text,
+            reflectionService: ReflectionService(fileService: fileService)
+        )
+        .frame(minWidth: 800, minHeight: 600)
+        .preferredColorScheme(preferencesService.colorScheme)
+    }
+    
     private var voiceAgentView: some View {
-        VoiceAgentWrapperView(appState: appState)
-            .frame(minWidth: 1100, minHeight: 600)
-            .preferredColorScheme(preferencesService.colorScheme)
+        VoiceAgentWrapperView(
+            appState: appState,
+            initialContext: appState.reflectionContext
+        )
+        .frame(minWidth: 1100, minHeight: 600)
+        .preferredColorScheme(preferencesService.colorScheme)
     }
 
     var body: some View {
@@ -192,6 +205,8 @@ struct ContentView: View {
             switch appState.currentMode {
             case .writing:
                 writingView
+            case .reflectionSelection:
+                reflectionSelectionView
             case .voiceAgent:
                 voiceAgentView
             }
@@ -361,38 +376,13 @@ struct ContentView: View {
 
 struct VoiceAgentWrapperView: View {
     @ObservedObject var appState: AppState
+    let initialContext: String?
     @State private var viewModel = AppViewModel()
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            // VoiceAgent content
-            AppView()
-                .environment(viewModel)
-            
-            // Back button
-            VStack {
-                HStack {
-                    Button(action: {
-                        appState.switchToWriting()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                            Text("Back to Writing")
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(.regularMaterial)
-                        .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Spacer()
-                }
-                .padding()
-                
-                Spacer()
-            }
-        }
+        // VoiceAgent content - no back button, only disconnect via phone down button
+        AppView(initialContext: initialContext, appState: appState)
+            .environment(viewModel)
     }
 }
 

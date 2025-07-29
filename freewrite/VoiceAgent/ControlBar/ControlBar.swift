@@ -6,6 +6,8 @@ import LiveKitComponents
 struct ControlBar: View {
     @Environment(AppViewModel.self) private var viewModel
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    
+    let appState: AppState?
 
     private enum Constants {
         static let buttonWidth: CGFloat = 16 * .grid
@@ -156,7 +158,7 @@ struct ControlBar: View {
 
     @ViewBuilder
     private func disconnectButton() -> some View {
-        AsyncButton(action: viewModel.disconnect) {
+        AsyncButton(action: disconnectAndNavigateBack) {
             Image(systemName: "phone.down.fill")
                 .frame(width: Constants.buttonWidth, height: Constants.buttonHeight)
         }
@@ -169,9 +171,18 @@ struct ControlBar: View {
         )
         .disabled(viewModel.connectionState == .disconnected)
     }
+    
+    private func disconnectAndNavigateBack() async {
+        await viewModel.disconnect()
+        
+        // Navigate back to writing screen after disconnect
+        await MainActor.run {
+            appState?.switchToWriting()
+        }
+    }
 }
 
 #Preview {
-    ControlBar()
+    ControlBar(appState: nil)
         .environment(AppViewModel())
 }

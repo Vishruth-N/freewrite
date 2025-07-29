@@ -46,23 +46,31 @@ struct AppSettings {
 
 enum AppMode {
     case writing
+    case reflectionSelection
     case voiceAgent
 }
 
 @MainActor
 class AppState: ObservableObject {
     @Published var currentMode: AppMode = .writing
+    @Published var reflectionContext: String? = nil
     
     static let shared = AppState()
     
     private init() {}
     
-    func switchToVoiceAgent() {
+    func switchToReflectionSelection() {
+        currentMode = .reflectionSelection
+    }
+    
+    func switchToVoiceAgent(with context: String? = nil) {
+        reflectionContext = context
         currentMode = .voiceAgent
     }
     
     func switchToWriting() {
         currentMode = .writing
+        reflectionContext = nil
     }
 }
 

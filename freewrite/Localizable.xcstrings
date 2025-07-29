@@ -30,6 +30,9 @@
     "ChatGPT" : {
 
     },
+    "Choose what you'd like to reflect on" : {
+
+    },
     "Claude" : {
 
     },
@@ -116,6 +119,9 @@
     "Hey, your entry is long. It'll break the URL. Instead, copy prompt by clicking below and paste into AI of your choice!" : {
 
     },
+    "Initializing..." : {
+
+    },
     "message.placeholder" : {
       "localizations" : {
         "en" : {
@@ -133,6 +139,9 @@
 
     },
     "Please free write for at minimum 5 minutes first. Then click this. Trust." : {
+
+    },
+    "Preparing your reflection session" : {
 
     },
     "Reflect" : {

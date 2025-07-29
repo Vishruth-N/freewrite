@@ -129,7 +129,7 @@ struct UtilityButtonsSection: View {
                 .foregroundColor(.gray)
             
             Button(action: {
-                appState.switchToVoiceAgent()
+                appState.switchToReflectionSelection()
             }) {
                 Text("Reflect")
                     .font(.system(size: 13))
