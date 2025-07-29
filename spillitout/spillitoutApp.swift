@@ -1,6 +1,6 @@
 //
-//  freewriteApp.swift
-//  freewrite
+//  spillitoutApp.swift
+//  spillitout
 //
 //  Created by thorfinn on 2/14/25.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct freewriteApp: App {
+struct spillitoutApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("colorScheme") private var colorSchemeString: String = "light"
     

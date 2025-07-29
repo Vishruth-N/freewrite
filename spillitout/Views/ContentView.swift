@@ -1,7 +1,7 @@
 // Swift 5.0
 //
 //  ContentView.swift
-//  freewrite
+//  spillitout
 //
 //  Created by thorfinn on 2/14/25.
 //

@@ -1,6 +1,6 @@
 # Voice Service - Reflect Feature
 
-This is the voice AI assistant service for the Freewrite app's "reflect" feature. It uses the Livekit Agents framework to provide real-time voice conversations with an AI assistant named Kelly.
+This is the voice AI assistant service for the Spillitout app's "reflect" feature. It uses the Livekit Agents framework to provide real-time voice conversations with an AI assistant named Kelly.
 
 ## Setup
 
@@ -49,6 +49,6 @@ The agent (Kelly) is configured to:
 - **VAD**: Silero Voice Activity Detection
 - **Turn Detection**: Multilingual model
 
-## Integration with Freewrite App
+## Integration with Spillitout App
 
-The voice service runs independently and can be integrated with the main Freewrite macOS app through WebRTC connections to the Livekit room. 
+The voice service runs independently and can be integrated with the main Spillitout macOS app through WebRTC connections to the Livekit room. 

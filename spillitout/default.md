@@ -1,4 +1,4 @@
-Hi. Welcome to Freewrite :).
+Hi. Welcome to Spillitout :).
 
 Plz read this guide.
 
@@ -14,11 +14,11 @@ This is not a journaling app or a note-taking app.
 If you use it for that, you’ll probably use it once or twice,
 and then never touch it again.
 
-This is a tool purely to help you freewrite.
+This is a tool purely to help you spill it out.
 
 Freewriting is a writing strategy developed in 1973 — it’s where you write continuously for a set time without worrying about grammar, spelling, or anything like that. A pure stream of consciousness.
 
-I picked up freewriting many years ago.
+I picked up this writing style many years ago.
 
 It’s led to real breakthroughs — like helping me untangle big feelings around shutting down my last company, reflecting on my relationships, and figuring out what actually matters to me as I continuously figure out the next chapter of life.
 
@@ -75,14 +75,14 @@ Some are better at writing about work or ideas.
 
 Try everything. See what works for you.
 
-Freewriting is the most important skill I picked up in the last 10 years.
+Spilling it out is the most important skill I picked up in the last 10 years.
 
 It’s helped me think through my most difficult life decisions.
 It’s helped me think through startups in a more thorough way.
 It’s made me a better partner and friend (I like communicating with letters).
 It’s helped me be happier (on my down days, I write it all out and feel better).
 
-So that’s it! That’s the app. I hope freewriting helps you.
+So that’s it! That’s the app. I hope spilling it out helps you.
 
 I know it’s a dumb little app — just a text view with some black text + a timer — but, use its ideas properly and it can make a big impact :).
 
@@ -90,7 +90,7 @@ I know it’s a dumb little app — just a text view with some black text + a ti
 
 Lil bonus features:
 
-1. Once you finish a freewrite session, click “Chat”.
+1. Once you finish a spill-it-out session, click "Chat".
 
 It’ll push your entry to ChatGPT or Claude via a query parameter to help you reflect. I also baked in my custom prompt I’ve been using for months. This little thing has helped me so much. AI is really good at helping make connections you might not see. I hope it helps you too.
 
@@ -108,10 +108,10 @@ If I’m thinking through a new business idea, I prefer a more official-looking 
 5. Click the clock on the bottom right to see your history. It’s all saved locally. Click the file path at the top to open it in Finder.
 
 See a bug? Wanna add something? See open issues and requests on the repo here:
-https://github.com/farzaa/freewrite
+https://github.com/farzaa/spillitout
 
 Wanna join your fellow writers? Join:
-https://freewrite.io (click join writing at top).
+https://spillitout.io (click join writing at top).
 
 Enjoy everyone!!
 

@@ -5,9 +5,9 @@ class FileService: ObservableObject {
     private let fileManager = FileManager.default
     
     private let documentsDirectory: URL = {
-        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Freewrite")
+        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Spillitout")
         
-        // Create Freewrite directory if it doesn't exist
+        // Create Spillitout directory if it doesn't exist
         if !FileManager.default.fileExists(atPath: directory.path) {
             do {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

@@ -1,14 +1,14 @@
-# hi, this is freewrite
+# hi, this is spillitout
 
-a simple, open-source mac app to freewrite.
+a simple, open-source mac app to spill it out.
 
-download latest version [here](https://www.freewrite.io/)
+download latest version [here](https://www.spillitout.io/)
 
 ![img](https://i.imgur.com/2ucbtff.gif)
 
 ## Features
 
-- **Freewriting**: Simple, distraction-free writing environment
+- **Spilling it out**: Simple, distraction-free writing environment
 - **Reflect**: Voice AI assistant to chat about your journals (powered by Livekit Agents)
 
 ## Getting Started
