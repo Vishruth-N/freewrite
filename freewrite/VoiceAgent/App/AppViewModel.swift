@@ -82,6 +82,13 @@ final class AppViewModel {
     private(set) var selectedVideoDeviceID: String?
 
     private(set) var canSwitchCamera = false
+    
+    // MARK: - Background Tasks
+    
+    @ObservationIgnored
+    private var roomObservationTask: Task<Void, Never>?
+    @ObservationIgnored
+    private var deviceObservationTask: Task<Void, Never>?
 
     // MARK: - Dependencies
 
@@ -102,7 +109,7 @@ final class AppViewModel {
     }
 
     private func observeRoom() {
-        Task { [weak self] in
+        roomObservationTask = Task { [weak self] in
             guard let changes = self?.room.changes else { return }
             for await _ in changes {
                 guard let self else { return }
@@ -139,7 +146,7 @@ final class AppViewModel {
             }
         }
 
-        Task {
+        deviceObservationTask = Task {
             do {
                 canSwitchCamera = try await CameraCapturer.canSwitchPosition()
                 videoDevices = try await CameraCapturer.captureDevices()
@@ -152,6 +159,15 @@ final class AppViewModel {
 
     deinit {
         AudioManager.shared.onDeviceUpdate = nil
+        // Note: Cannot call cleanupTasks() here due to actor isolation
+        // cleanupTasks() is called explicitly in disconnect() where needed
+    }
+    
+    private func cleanupTasks() {
+        roomObservationTask?.cancel()
+        roomObservationTask = nil
+        deviceObservationTask?.cancel()
+        deviceObservationTask = nil
     }
 
     private func resetState() {
@@ -215,8 +231,15 @@ final class AppViewModel {
     }
 
     func disconnect() async {
+        // Cancel all background tasks first to prevent them from trying to access the room after disconnect
+        cleanupTasks()
+        
+        // Now safely disconnect from the room
         await room.disconnect()
         resetState()
+        
+        // Restart room observation for potential future connections
+        observeRoom()
     }
 
     private func checkAgentConnected() async throws {

@@ -20,6 +20,13 @@ final class ChatViewModel {
     // MARK: - State
 
     private(set) var messages: OrderedDictionary<ReceivedMessage.ID, ReceivedMessage> = [:]
+    
+    // MARK: - Background Tasks
+    
+    @ObservationIgnored
+    private var messageObservationTasks: [Task<Void, Never>] = []
+    @ObservationIgnored
+    private var roomObservationTask: Task<Void, Never>?
 
     // MARK: - Dependencies
 
@@ -38,12 +45,17 @@ final class ChatViewModel {
         observeMessages()
         observeRoom()
     }
+    
+    deinit {
+        // Note: Cannot call cleanup() here due to actor isolation
+        // cleanup() is called explicitly in onDisappear where needed
+    }
 
     // MARK: - Private
 
     private func observeMessages() {
         for messageReceiver in messageReceivers {
-            Task { [weak self] in
+            let task = Task { [weak self] in
                 do {
                     for await message in try await messageReceiver
                         .messages()
@@ -56,11 +68,12 @@ final class ChatViewModel {
                     self?.errorHandler(error)
                 }
             }
+            messageObservationTasks.append(task)
         }
     }
 
     private func observeRoom() {
-        Task { [weak self] in
+        roomObservationTask = Task { [weak self] in
             guard let changes = self?.room.changes else { return }
             for await _ in changes {
                 guard let self else { return }
@@ -73,6 +86,14 @@ final class ChatViewModel {
 
     private func clearHistory() {
         messages.removeAll()
+    }
+    
+    /// Cleanup all background tasks
+    public func cleanup() {
+        messageObservationTasks.forEach { $0.cancel() }
+        messageObservationTasks.removeAll()
+        roomObservationTask?.cancel()
+        roomObservationTask = nil
     }
 
     // MARK: - Actions

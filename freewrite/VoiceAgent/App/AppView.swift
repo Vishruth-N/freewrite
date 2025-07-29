@@ -71,6 +71,13 @@ struct AppView: View {
                     }
                 }
             }
+            .onDisappear {
+                // Clean up when view disappears to prevent memory leaks and stream errors
+                Task {
+                    await viewModel.disconnect()
+                    chatViewModel.cleanup()
+                }
+            }
         #if os(iOS)
             .sensoryFeedback(.impact, trigger: viewModel.isListening)
         #endif

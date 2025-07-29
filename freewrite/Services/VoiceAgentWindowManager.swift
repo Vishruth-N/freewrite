@@ -7,6 +7,7 @@ class VoiceAgentWindowManager: ObservableObject {
     static let shared = VoiceAgentWindowManager()
     
     private var voiceAgentWindow: NSWindow?
+    private var appViewModel: AppViewModel?
     
     private init() {}
     
@@ -20,6 +21,7 @@ class VoiceAgentWindowManager: ObservableObject {
         
         // Create the AppViewModel for VoiceAgent
         let viewModel = AppViewModel()
+        self.appViewModel = viewModel
         
         // Create the VoiceAgent view
         let voiceAgentView = AppView()
@@ -41,7 +43,12 @@ class VoiceAgentWindowManager: ObservableObject {
         
         // Set up window delegate to clean up when closed
         let delegate = VoiceAgentWindowDelegate { [weak self] in
-            self?.voiceAgentWindow = nil
+            Task { @MainActor in
+                // Properly disconnect before cleaning up
+                await self?.appViewModel?.disconnect()
+                self?.appViewModel = nil
+                self?.voiceAgentWindow = nil
+            }
         }
         window.delegate = delegate
         
@@ -51,8 +58,13 @@ class VoiceAgentWindowManager: ObservableObject {
     }
     
     func closeVoiceAgent() {
-        voiceAgentWindow?.close()
-        voiceAgentWindow = nil
+        Task { @MainActor in
+            // Ensure proper disconnect before closing
+            await appViewModel?.disconnect()
+            voiceAgentWindow?.close()
+            appViewModel = nil
+            voiceAgentWindow = nil
+        }
     }
     
     var isVoiceAgentOpen: Bool {
