@@ -9,32 +9,11 @@ class SpeechService: ObservableObject {
     private var recognitionTask: SFSpeechRecognitionTask?
     private var audioEngine = AVAudioEngine()
     
-    private var baseTextBeforeDictation = ""
-    private var currentPartialText = ""
-    private var userEditedDuringRecording = false
-    private var isProcessingUserEdit = false
-    private var retryCount = 0
-    private let maxRetries = 2
+    private var currentText = ""
     
     var onTextUpdate: ((String) -> Void)?
-    var onTextChanged: ((String, Bool) -> Void)? // text, isUserEdit
-    
-    private func resetSpeechRecognizer() {
-        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
-    }
     
     func startDictation(currentText: String) {
-        
-        // Reset retry count only if this is a fresh start (not a retry)
-        if !isRecording {
-            retryCount = 0
-        }
-        
-        // Try to reset speech recognizer if not available
-        if speechRecognizer == nil || !speechRecognizer!.isAvailable {
-            resetSpeechRecognizer()
-        }
-        
         guard let speechRecognizer = speechRecognizer, speechRecognizer.isAvailable else {
             return
         }
@@ -76,6 +55,7 @@ class SpeechService: ObservableObject {
             return
         }
         
+        // Clean up any existing session
         if isRecording {
             stopRecording()
         }
@@ -90,13 +70,6 @@ class SpeechService: ObservableObject {
         
         recognitionRequest.shouldReportPartialResults = true
         
-        // Try on-device first, then cloud on retry
-        if retryCount == 0 && speechRecognizer.supportsOnDeviceRecognition {
-            recognitionRequest.requiresOnDeviceRecognition = true
-        } else {
-            recognitionRequest.requiresOnDeviceRecognition = false  
-        }
-        
         if #available(macOS 13.0, *) {
             recognitionRequest.addsPunctuation = true
         }
@@ -104,9 +77,8 @@ class SpeechService: ObservableObject {
         let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0)
         
-        baseTextBeforeDictation = currentText
-        userEditedDuringRecording = false
-        isProcessingUserEdit = false
+        // Store the initial text
+        self.currentText = currentText
         
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
             DispatchQueue.main.async {
@@ -115,80 +87,16 @@ class SpeechService: ObservableObject {
                 }
                 
                 if let result = result {
-                    // Reset retry count on successful result
-                    if self.retryCount > 0 {
-                        self.retryCount = 0
-                    }
-                    
-                    guard !self.isProcessingUserEdit else { 
-                        return 
-                    }
-                    
                     let transcribedText = result.bestTranscription.formattedString
                     
-                    if self.userEditedDuringRecording {
-                        self.isProcessingUserEdit = true
-                        self.baseTextBeforeDictation = currentText
-                        self.currentPartialText = ""
-                        self.userEditedDuringRecording = false
-                        self.stopRecording()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            self.isProcessingUserEdit = false
-                            self.startRecording(currentText: currentText)
-                        }
-                        return
-                    }
-                    
-                    if result.isFinal {
-                        if !transcribedText.isEmpty {
-                            let newText = self.baseTextBeforeDictation + transcribedText + " "
-                            self.onTextUpdate?(newText)
-                            self.baseTextBeforeDictation = newText
-                        }
-                        self.currentPartialText = ""
-                        
-                        self.isProcessingUserEdit = true
-                        self.stopRecording()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            self.isProcessingUserEdit = false
-                            self.startRecording(currentText: self.baseTextBeforeDictation)
-                        }
-                    } else {
-                        self.currentPartialText = transcribedText
-                        let newText = self.baseTextBeforeDictation + transcribedText
-                        self.onTextUpdate?(newText)
-                    }
+                    // Always append to the initial text
+                    let newText = self.currentText + (transcribedText.isEmpty ? "" : transcribedText)
+                    self.onTextUpdate?(newText)
                 }
                 
                 if let error = error {
-                    
-                    // Check if it's a service error that we can retry
-                    let nsError = error as NSError
-                    if (nsError.domain == "kAFAssistantErrorDomain" && nsError.code == 1101) || 
-                       (nsError.domain == "kAFAssistantErrorDomain") {
-                        
-                        if self.retryCount < self.maxRetries {
-                            self.retryCount += 1
-                            
-                            // Stop current recording and retry
-                            if self.isRecording {
-                                self.stopRecording()
-                            }
-                            
-                            // Retry after a short delay
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                self.startDictation(currentText: self.baseTextBeforeDictation)
-                            }
-                            return
-                        } else {
-                            self.retryCount = 0
-                        }
-                    }
-                    
-                    // For other errors or max retries reached, stop recording
-                    if self.isRecording {
-                        self.stopRecording()
-                    }
+                    print("Speech recognition error: \(error)")
+                    self.stopRecording()
                 }
             }
         }
@@ -237,12 +145,12 @@ class SpeechService: ObservableObject {
             try audioEngine.start()
             isRecording = true
         } catch {
+            print("Audio engine failed to start: \(error)")
             stopRecording()
         }
     }
     
     func stopDictation() {
-        retryCount = 0  // Reset retry count on manual stop
         stopRecording()
     }
     
@@ -261,29 +169,6 @@ class SpeechService: ObservableObject {
         recognitionTask?.cancel()
         recognitionTask = nil
         
-        if let onTextUpdate = onTextUpdate {
-            let currentText = baseTextBeforeDictation + (currentPartialText.isEmpty ? "" : currentPartialText)
-            if !currentText.hasSuffix(" ") && !currentPartialText.isEmpty {
-                onTextUpdate(currentText + " ")
-            }
-        }
-        
-        currentPartialText = ""
-        baseTextBeforeDictation = ""
-        userEditedDuringRecording = false
-        isProcessingUserEdit = false
-        
         isRecording = false
-    }
-    
-    func handleTextChange(newText: String) {
-        if isRecording {
-            let expectedText = baseTextBeforeDictation + currentPartialText
-            if newText != expectedText {
-                userEditedDuringRecording = true
-                baseTextBeforeDictation = newText
-                currentPartialText = ""
-            }
-        }
     }
 } 

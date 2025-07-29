@@ -353,8 +353,6 @@ struct ContentView: View {
         let now = Date()
         lastTypingTime = now
         
-        speechService.handleTextChange(newText: text)
-        
         // Start timer if not already running and text is not empty
         if !timerIsRunning && !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             timerIsRunning = true
