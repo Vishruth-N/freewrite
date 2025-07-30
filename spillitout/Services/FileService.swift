@@ -15,7 +15,6 @@ class FileService: ObservableObject {
                 // Directory creation failed, but we'll continue
             }
         }
-        
         return directory
     }()
     

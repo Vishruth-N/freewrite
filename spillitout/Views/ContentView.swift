@@ -116,12 +116,48 @@ struct ContentView: View {
         )
     }
     
+    // Centered Reflect button
+    private var reflectButton: some View {
+        Button(action: {
+            appState.switchToReflectionSelection()
+        }) {
+            Text("Reflect")
+                .font(.system(size: 13))
+                .foregroundColor(isHoveringReflect ? textHoverColor : textColor)
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            isHoveringReflect = hovering
+            handleBottomNavHover(hovering)
+            if hovering {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
+    }
+    
+    @State private var isHoveringReflect = false
+    
+    private var textColor: Color {
+        preferencesService.colorScheme == .light ? Color.gray : Color.gray.opacity(0.8)
+    }
+    
+    private var textHoverColor: Color {
+        preferencesService.colorScheme == .light ? Color.black : Color.white
+    }
+    
     // Bottom navigation view
     private var bottomNavigationView: some View {
         VStack {
             Spacer()
             HStack {
                 fontButtonsSection
+                Spacer()
+                
+                // Centered Reflect button
+                reflectButton
+                
                 Spacer()
                 UtilityButtonsSection(
                     timeRemaining: $timeRemaining,
