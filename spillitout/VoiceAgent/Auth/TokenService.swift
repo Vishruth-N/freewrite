@@ -1,22 +1,39 @@
 import Foundation
 
-/// An example service for fetching LiveKit authentication tokens
+/// Production service for fetching LiveKit authentication tokens
 ///
-/// To use the LiveKit Cloud sandbox (development only)
-/// - Enable your sandbox here https://cloud.livekit.io/projects/p_/sandbox/templates/token-server
-/// - Create .env.xcconfig with your LIVEKIT_SANDBOX_ID
+/// This service connects to your production token server to generate LiveKit access tokens.
+/// 
+/// Setup:
+/// - Deploy your token server (server.py) to render.com or similar platform
+/// - Update the `productionServerUrl` below to point to your deployed server
+/// - Ensure your server has the correct LIVEKIT_API_KEY, LIVEKIT_API_SECRET, and LIVEKIT_URL configured
 ///
-/// To use a hardcoded token (development only)
-/// - Generate a token: https://docs.livekit.io/home/cli/cli-setup/#generate-access-token
-/// - Set `hardcodedServerUrl` and `hardcodedToken` below
+/// For development, you can point to localhost (e.g., "http://localhost:8080")
+/// For production, use your deployed URL (e.g., "https://your-app.onrender.com")
 ///
-/// To use your own server (production applications)
-/// - Add a token endpoint to your server with a LiveKit Server SDK https://docs.livekit.io/home/server/generating-tokens/
-/// - Modify or replace this class as needed to connect to your new token server
-/// - Rejoice in your new production-ready LiveKit application!
-///
-/// See [docs](https://docs.livekit.io/home/get-started/authentication) for more information.
+/// See [docs](https://docs.livekit.io/home/server/generating-tokens/) for more information.
 actor TokenService {
+    enum TokenServiceError: Error, LocalizedError {
+        case serverNotConfigured
+        case networkError(String)
+        case invalidResponse(Int)
+        case decodingError
+        
+        var errorDescription: String? {
+            switch self {
+            case .serverNotConfigured:
+                return "Token server URL is not configured"
+            case .networkError(let message):
+                return "Network error: \(message)"
+            case .invalidResponse(let statusCode):
+                return "Invalid response from token server: \(statusCode)"
+            case .decodingError:
+                return "Failed to decode response from token server"
+            }
+        }
+    }
+    
     struct ConnectionDetails: Codable {
         let serverUrl: String
         let roomName: String
@@ -25,70 +42,61 @@ actor TokenService {
     }
 
     func fetchConnectionDetails(roomName: String, participantName: String) async throws -> ConnectionDetails? {
-        if let hardcodedConnectionDetails = fetchHardcodedConnectionDetails(roomName: roomName, participantName: participantName) {
-            return hardcodedConnectionDetails
-        }
-
-        return try await fetchConnectionDetailsFromSandbox(roomName: roomName, participantName: participantName)
-    }
-
-    private let hardcodedServerUrl: String? = nil
-    private let hardcodedToken: String? = nil
-
-    private let sandboxId: String? = {
-        if let value = Bundle.main.object(forInfoDictionaryKey: "LiveKitSandboxId") as? String {
-            // LK CLI will add unwanted double quotes
-            return value.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-        }
-        return nil
-    }()
-
-    private let sandboxUrl: String = "https://cloud-api.livekit.io/api/sandbox/connection-details"
-    private func fetchConnectionDetailsFromSandbox(roomName: String, participantName: String) async throws -> ConnectionDetails? {
-        guard let sandboxId else {
+        do {
+            return try await fetchConnectionDetailsFromProduction(roomName: roomName, participantName: participantName)
+        } catch {
+            print("TokenService error: \(error.localizedDescription)")
             return nil
         }
+    }
 
-        var urlComponents = URLComponents(string: sandboxUrl)!
+    private let productionServerUrl: String = "https://freewrite-xcmf.onrender.com"
+    
+    private func fetchConnectionDetailsFromProduction(roomName: String, participantName: String) async throws -> ConnectionDetails {
+        guard !productionServerUrl.isEmpty else {
+            throw TokenServiceError.serverNotConfigured
+        }
+        
+        guard let url = URL(string: "\(productionServerUrl)/getToken") else {
+            throw TokenServiceError.networkError("Invalid server URL")
+        }
+        
+        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         urlComponents.queryItems = [
             URLQueryItem(name: "roomName", value: roomName),
             URLQueryItem(name: "participantName", value: participantName),
         ]
 
         var request = URLRequest(url: urlComponents.url!)
-        request.httpMethod = "POST"
-        request.addValue(sandboxId, forHTTPHeaderField: "X-Sandbox-ID")
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 30.0
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
 
-        guard let httpResponse = response as? HTTPURLResponse else {
-            debugPrint("Failed to connect to LiveKit Cloud sandbox")
-            return nil
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw TokenServiceError.networkError("Invalid response type")
+            }
+
+            guard (200 ... 299).contains(httpResponse.statusCode) else {
+                throw TokenServiceError.invalidResponse(httpResponse.statusCode)
+            }
+
+            do {
+                let connectionDetails = try JSONDecoder().decode(ConnectionDetails.self, from: data)
+                print("Successfully fetched production connection details: \(connectionDetails)")
+                return connectionDetails
+            } catch {
+                throw TokenServiceError.decodingError
+            }
+        } catch {
+            if error is TokenServiceError {
+                throw error
+            } else {
+                throw TokenServiceError.networkError(error.localizedDescription)
+            }
         }
-
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            debugPrint("Error from LiveKit Cloud sandbox: \(httpResponse.statusCode), response: \(httpResponse)")
-            return nil
-        }
-
-        guard let connectionDetails = try? JSONDecoder().decode(ConnectionDetails.self, from: data) else {
-            debugPrint("Error parsing connection details from LiveKit Cloud sandbox, response: \(httpResponse)")
-            return nil
-        }
-
-        return connectionDetails
     }
 
-    private func fetchHardcodedConnectionDetails(roomName: String, participantName: String) -> ConnectionDetails? {
-        guard let serverUrl = hardcodedServerUrl, let token = hardcodedToken else {
-            return nil
-        }
-
-        return .init(
-            serverUrl: serverUrl,
-            roomName: roomName,
-            participantName: participantName,
-            participantToken: token
-        )
-    }
 }
