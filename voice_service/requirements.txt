@@ -1,6 +1,14 @@
+# Voice Agent Dependencies (for agent.py)
 livekit-agents
 livekit-plugins-deepgram
 livekit-plugins-openai
 livekit-plugins-silero
 livekit-plugins-turn-detector
+
+# Token Server Dependencies (for server.py)
+fastapi
+uvicorn[standard]
+livekit-api
+
+# Shared Dependencies
 python-dotenv 
