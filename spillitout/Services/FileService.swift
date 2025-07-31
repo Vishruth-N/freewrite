@@ -5,9 +5,9 @@ class FileService: ObservableObject {
     private let fileManager = FileManager.default
     
     private let documentsDirectory: URL = {
-        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Spillitout")
+        let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Spill")
         
-        // Create Spillitout directory if it doesn't exist
+        // Create Spill directory if it doesn't exist
         if !FileManager.default.fileExists(atPath: directory.path) {
             do {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -15,10 +15,12 @@ class FileService: ObservableObject {
                 // Directory creation failed, but we'll continue
             }
         }
+        print("documentsDirectory: \(directory)")
         return directory
     }()
     
     func getDocumentsDirectory() -> URL {
+        print("documentsDirectory: \(documentsDirectory)")
         return documentsDirectory
     }
     

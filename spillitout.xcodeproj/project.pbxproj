@@ -226,6 +226,7 @@
 				68DE22662E38ED3500A93201 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 				68DE22672E38ED5600A93201 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				68DE226C2E38EDB300A93201 /* XCRemoteSwiftPackageReference "components-swift" */,
+				68DE257A2E3B695A00A93201 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2857D4712D5F8A8000EE1012 /* Products */;
@@ -678,6 +679,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.1.4;
+			};
+		};
+		68DE257A2E3B695A00A93201 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

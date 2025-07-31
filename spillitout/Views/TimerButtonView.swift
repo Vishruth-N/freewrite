@@ -68,10 +68,9 @@ struct TimerButtonView: View {
                 if abs(scrollBuffer) >= 0.1 {
                     let currentMinutes = timeRemaining / 60
                     NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .now)
-                    let direction = -scrollBuffer > 0 ? 2 : -2
+                    let direction = -scrollBuffer > 0 ? 1 : -1
                     let newMinutes = currentMinutes + direction
-                    let roundedMinutes = (newMinutes / 2) * 2
-                    let newTime = roundedMinutes * 60
+                    let newTime = newMinutes * 60
                     timeRemaining = min(max(newTime, 0), AppSettings.maxTimerDuration)
                     
                     // Add zoom pulse effect when scrolling
