@@ -36,10 +36,6 @@ COPY . .
 # Based on your agent.py, you use Silero VAD and potentially other models
 RUN python agent.py download-files
 
-# Expose port 8080 for token server (Render will use this)
-# Port 8081 is for agent health checks (internal only)
-EXPOSE 8080
-
 # Create a startup script to run both services
 RUN echo '#!/bin/bash\n\
 python server.py &\n\

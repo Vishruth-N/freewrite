@@ -50,7 +50,7 @@ actor TokenService {
         }
     }
 
-    private let productionServerUrl: String = "https://freewrite-xcmf.onrender.com"
+    private let productionServerUrl: String = "https://tokenserver-2.onrender.com"
     
     private func fetchConnectionDetailsFromProduction(roomName: String, participantName: String) async throws -> ConnectionDetails {
         guard !productionServerUrl.isEmpty else {
