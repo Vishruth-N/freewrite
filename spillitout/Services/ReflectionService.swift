@@ -38,7 +38,7 @@ class ReflectionService: ObservableObject {
         
         ideally, your style/tone should sound like the user themselves. it's as if the user is hearing their own tone but it should still feel different, because you have different things to say and don't just repeat back what they say.
         
-        else, start by saying, "hey, thanks for sharing this with me, let me reflect on what you've written..."
+        else, start by saying, "hey, thanks for sharing this with me, let me reflect on what you've written"
         """
         
         return basePrompt + "\n" + contextContent
