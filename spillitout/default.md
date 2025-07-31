@@ -1,118 +1,94 @@
-Hi. Welcome to Spillitout :).
+Welcome to Spill :)
 
-Plz read this guide.
+Please read this guide. It's 5 minutes max.
 
-I beg of you.
+We are Vishruth and Faraaz
 
-It’s 5 min max.
+We built this app.
 
-My name is Vishruth.
-
-I made this app.
+freewriting is a technique from 1973 where you write continuously for a set time without stopping, editing, or caring about grammar. Pure stream of consciousness. 
 
 This is not a journaling app or a note-taking app.
-If you use it for that, you’ll probably use it once or twice,
-and then never touch it again.
+If you use it for that, you'll open it twice and forget it exists.
 
-This is a tool purely to help you spill it out.
+This is a tool purely for freewriting — for unclogging your mental drain.
 
-Freewriting is a writing strategy developed in 1973 — it’s where you write continuously for a set time without worrying about grammar, spelling, or anything like that. A pure stream of consciousness.
+Once you're done, the next step is to click on the "Reflect" button. A soothing voice helps you articulate and make connections in your thoughts you'd never noticed before.
 
-I picked up this writing style many years ago.
+How it works:
 
-It’s led to real breakthroughs — like helping me untangle big feelings around shutting down my last company, reflecting on my relationships, and figuring out what actually matters to me as I continuously figure out the next chapter of life.
+1. Think of something that's been bouncing around your head (ex. a breakup, a struggle at work, a new idea)
+2. Click fullscreen  
+3. Start the timer
+4. Write. No backspaces. Don't stop.
+5. Reflect on your session by speaking your heart out with Spill (click on the 'Reflect' button)
 
-Using this app is actually super simple:
+When the timer ends, it fades back in. You're done.
 
-1. Think of a topic to write about (ex. a breakup, a struggle at work, a new idea)
-2. Click fullscreen
-3. Click the timer
-4. Start writing. No backspaces allowed. Don’t stop writing.
+The rules (non-negotiable):
 
-Once the timer is done, it’ll fade back in — and you’ll know to stop.
-
-That’s it.
-
-Some basic rules:
-
-- Again, no backspaces
-- No fixing spelling
-- Little 5–10s breaks are fine, but try to not stop typing
-- No need to stay on the topic you started with — let your mind wander
-- No judgment — trust your mind!
+- No backspaces — truly enforce this by using the strict mode (padlock on the utility bar).
+- No spell-checks
+- Brief 5-10 second pauses are fine, but keep your fingers moving
+- Let your mind wander, you might start writing about work stress and end up processing your relationship with your dad
+- No judgment
 
 It’s like your brain is GPT and you just exhaust all the tokens in your head around a particular topic — and by the end, you’ll likely feel clearer about whatever it was you were writing about.
 
-I know 15m can sound scary for some. What do you even write about.
+If you're new to this:
 
-If you’re new to writing, try this:
+15 minutes sounds terrifying. "What do I even write about?"
 
-Before you start your working day, open this app and do a 15m session answering this simple question: “What am I working on today? Why is that the most important thing for me to work on?”
+Try this tomorrow morning before work. Open the app and spend 15 minutes on: "What am I working on today? Why is that the most important thing for me to focus on?"
 
-And don’t stop writing for 15 minutes.
+Don't stop writing for 15 minutes.
 
-This little session is how I planned and prioritized my days for many years.
+This simple practice could completely change how you approach your days. If you're used to get lost in busy work and email rabbit holes, you might finish this session with clarity about what actually matters, and often completely change your original plan for the better.
 
-Do this for 3-days straight.
+Do it for 3 days straight. See what happens.
 
-I find this is an easy way to get into writing.
-
-You’d be surprised how easy it is to get sucked into nonsense right when the day starts — and then end up getting nothing of real value done over the next 8–12 hours.
-
-Often after this planning session, I’m 100x more clear and excited about what I’m about to do — and I usually end up changing what I originally planned, for the better.
-
-If you don’t wanna write about work, other starting prompts I use for myself:
+Other prompts to use:
 
 - “Today, X happened. And it’s got me feeling really down. I think — ”
 - “I had a new idea around Z today and want to think through it. Basically — ”
 - “I’m in love. And I just wanna talk about it. So — ”
 - “I think I wanna pivot some stuff. Here’s how I’m thinking about it — ”
 
-The starting prompt is everything. So, think on it.
+The starting prompt is everything. Spend time choosing it.
 
-Some people are better at writing about emotions.
-Some are better at writing about work or ideas.
+Some people are better at processing emotions through writing. Others work through ideas and problems. Try both. Find your groove.
 
-Try everything. See what works for you.
+Why this matters:
 
-Spilling it out is the most important skill I picked up in the last 10 years.
+Freewriting could be a really useful tool.
 
-It’s helped me think through my most difficult life decisions.
-It’s helped me think through startups in a more thorough way.
-It’s made me a better partner and friend (I like communicating with letters).
-It’s helped me be happier (on my down days, I write it all out and feel better).
-
-So that’s it! That’s the app. I hope spilling it out helps you.
-
-I know it’s a dumb little app — just a text view with some black text + a timer — but, use its ideas properly and it can make a big impact :).
+It might help you think through your most difficult life decisions.
+It might help you think through startups in a more thorough way.
+It might make you a better partner and friend (communicating with letters is fun).
+It might help you be happier (on your down days, you write it all out and feel better).
 
 (Or it ends up being dumb and useless for you haha. Find out for yourself!)
 
-Lil bonus features:
+The app itself:
 
-1. Once you finish a spill-it-out session, click "Chat".
+It looks like nothing — black text, white background, timer. That's intentional.
 
-It’ll push your entry to ChatGPT or Claude via a query parameter to help you reflect. I also baked in my custom prompt I’ve been using for months. This little thing has helped me so much. AI is really good at helping make connections you might not see. I hope it helps you too.
+No spell-check. No markdown. No distractions. Just you and your thoughts.
 
-2. Try to scroll on the timer using your trackpad — this is how you set different timer.
+Bonus features:
 
-Maybe start with 5m or 10m if 15m feels like a lot. For longer sessions where I’m writing scripts or brainstorming, I do 25m.
+1. After a session, click "Reflect." Speak to Spill. AI is surprisingly good at spotting patterns you missed.
 
-3. There is no spellcheck. There is no markdown. This is on purpose. It doesn’t matter.
+2. Scroll on the timer with your trackpad to change duration. Start with 5-10 minutes if 15 feels like too much. We do 25-minute sessions when brainstorming big projects.
 
-4. I’ve always felt that the font and size should reflect the mood of my writing. I’m kinda weird like that. But maybe there are other weird people like me out there haha.
+3. Font choice affects our thinking. Emotional stuff gets big Arial. Business ideas get clean serif. Use the random button to find your vibe.
 
-For example, for more emotional entries I like a larger "24px Arial".
-If I’m thinking through a new business idea, I prefer a more official-looking “18px Serif”. I also added the random button to help you find the vibe you’re looking for.
+Found bugs? Want features?
+GitHub: https://github.com/repo-link
 
-5. Click the clock on the bottom right to see your history. It’s all saved locally. Click the file path at the top to open it in Finder.
+Join other writers:
+https://spillitout.app (click "join writing")
 
-See a bug? Wanna add something? See open issues and requests on the repo here:
-https://github.com/farzaa/spillitout
+Try it. See what comes through.
 
-Wanna join your fellow writers? Join:
-https://spillitout.io (click join writing at top).
-
-Enjoy everyone!!
-
-– Farza
+— Faraaz & Vishruth
