@@ -26,10 +26,8 @@ struct ContentView: View {
     @State private var fontSize: CGFloat = 18
     @State private var bottomNavOpacity: Double = 1.0
     @State private var selectedEntryId: UUID? = nil
-    @State private var showingChatMenu = false
     @State private var showingSidebar = false
     @State private var placeholderText: String = ""
-    @State private var didCopyPrompt: Bool = false
     @State private var lastTypingTime: Date? = nil
     @State private var typingTimer: Timer? = nil
     
@@ -40,7 +38,7 @@ struct ContentView: View {
     @StateObject private var fileService = FileService()
     @StateObject private var speechService = SpeechService()
     @StateObject private var preferencesService = PreferencesService()
-    private let urlService = URLService()
+    @StateObject private var backspaceService = BackspaceService()
     private let pdfExportService = PDFExportService()
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -116,28 +114,7 @@ struct ContentView: View {
         )
     }
     
-    // Centered Reflect button
-    private var reflectButton: some View {
-        Button(action: {
-            appState.switchToReflectionSelection()
-        }) {
-            Text("Reflect")
-                .font(.system(size: 13))
-                .foregroundColor(isHoveringReflect ? textHoverColor : textColor)
-        }
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            isHoveringReflect = hovering
-            handleBottomNavHover(hovering)
-            if hovering {
-                NSCursor.pointingHand.push()
-            } else {
-                NSCursor.pop()
-            }
-        }
-    }
-    
-    @State private var isHoveringReflect = false
+
     
     private var textColor: Color {
         preferencesService.colorScheme == .light ? Color.gray : Color.gray.opacity(0.8)
@@ -154,22 +131,18 @@ struct ContentView: View {
             HStack {
                 fontButtonsSection
                 Spacer()
-                
-                // Centered Reflect button
-                reflectButton
-                
-                Spacer()
                 UtilityButtonsSection(
                     timeRemaining: $timeRemaining,
                     timerIsRunning: $timerIsRunning,
-                    showingChatMenu: $showingChatMenu,
-                    didCopyPrompt: $didCopyPrompt,
                     showingSidebar: $showingSidebar,
                     speechService: speechService,
                     preferencesService: preferencesService,
+                    backspaceService: backspaceService,
                     text: text,
-                    urlService: urlService,
                     onNewEntry: createNewEntry,
+                    onReflect: {
+                        appState.switchToReflectionSelection()
+                    },
                     onBottomNavHover: handleBottomNavHover
                 )
             }
@@ -282,7 +255,7 @@ struct ContentView: View {
     }
     
     private func setupKeyboardEvents() {
-        // Add keyboard event monitoring for ESC key to exit fullscreen
+        // Add keyboard event monitoring for ESC key to exit fullscreen and backspace blocking
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             if event.keyCode == 53 { // 53 is the key code for ESC
                 if let window = NSApplication.shared.windows.first {
@@ -291,6 +264,8 @@ struct ContentView: View {
                     }
                 }
                 return nil // Consume the ESC event
+            } else if event.keyCode == 51 && self.backspaceService.isBackspaceDisabled { // 51 is the key code for Backspace
+                return nil // Consume the backspace event when disabled
             }
             return event
         }

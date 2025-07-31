@@ -3,21 +3,21 @@ import SwiftUI
 struct UtilityButtonsSection: View {
     @Binding var timeRemaining: Int
     @Binding var timerIsRunning: Bool
-    @Binding var showingChatMenu: Bool
-    @Binding var didCopyPrompt: Bool
     @Binding var showingSidebar: Bool
     @ObservedObject var speechService: SpeechService
     @ObservedObject var preferencesService: PreferencesService
+    @ObservedObject var backspaceService: BackspaceService
     let text: String
-    let urlService: URLService
     let onNewEntry: () -> Void
+    let onReflect: () -> Void
     let onBottomNavHover: (Bool) -> Void
     
-    @State private var isHoveringChat = false
     @State private var isHoveringNewEntry = false
     @State private var isHoveringThemeToggle = false
     @State private var isHoveringDictation = false
     @State private var isHoveringClock = false
+    @State private var isHoveringReflect = false
+    @State private var isHoveringBackspace = false
     @Environment(\.colorScheme) var colorScheme
     
     private var textColor: Color {
@@ -30,19 +30,14 @@ struct UtilityButtonsSection: View {
     
     var body: some View {
         HStack(spacing: 8) {
-            TimerButtonView(timeRemaining: $timeRemaining, timerIsRunning: $timerIsRunning)
-            
-            Text("•")
-                .foregroundColor(.gray)
-            
-            Button("Chat") {
-                showingChatMenu = true
-                didCopyPrompt = false
+            Button(action: onReflect) {
+                Text("Reflect")
+                    .font(.system(size: 13))
+                    .foregroundColor(isHoveringReflect ? textHoverColor : textColor)
             }
             .buttonStyle(.plain)
-            .foregroundColor(isHoveringChat ? textHoverColor : textColor)
             .onHover { hovering in
-                isHoveringChat = hovering
+                isHoveringReflect = hovering
                 onBottomNavHover(hovering)
                 if hovering {
                     NSCursor.pointingHand.push()
@@ -50,14 +45,11 @@ struct UtilityButtonsSection: View {
                     NSCursor.pop()
                 }
             }
-            .popover(isPresented: $showingChatMenu, attachmentAnchor: .point(UnitPoint(x: 0.5, y: 0)), arrowEdge: .top) {
-                ChatMenuView(
-                    showingChatMenu: $showingChatMenu,
-                    didCopyPrompt: $didCopyPrompt,
-                    text: text,
-                    urlService: urlService
-                )
-            }
+            
+            Text("•")
+                .foregroundColor(.gray)
+            
+            TimerButtonView(timeRemaining: $timeRemaining, timerIsRunning: $timerIsRunning)
             
             Text("•")
                 .foregroundColor(.gray)
@@ -114,6 +106,26 @@ struct UtilityButtonsSection: View {
             .buttonStyle(.plain)
             .onHover { hovering in
                 isHoveringDictation = hovering
+                onBottomNavHover(hovering)
+                if hovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            
+            Text("•")
+                .foregroundColor(.gray)
+            
+            Button(action: {
+                backspaceService.toggleBackspaceDisabled()
+            }) {
+                Image(systemName: backspaceService.isBackspaceDisabled ? "lock.fill" : "lock.open")
+                    .foregroundColor(backspaceService.isBackspaceDisabled ? .orange : (isHoveringBackspace ? textHoverColor : textColor))
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                isHoveringBackspace = hovering
                 onBottomNavHover(hovering)
                 if hovering {
                     NSCursor.pointingHand.push()
