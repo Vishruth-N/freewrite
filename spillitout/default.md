@@ -45,6 +45,8 @@ Don't stop writing for 15 minutes.
 
 This simple practice could completely change how you approach your days. If you're used to get lost in busy work and email rabbit holes, you might finish this session with clarity about what actually matters, and often completely change your original plan for the better.
 
+(Or it ends up being dumb and useless for you haha. Find out for yourself!)
+
 Do it for 3 days straight. See what happens.
 
 Other prompts to use:
@@ -67,7 +69,6 @@ It might help you think through startups in a more thorough way.
 It might make you a better partner and friend (communicating with letters is fun).
 It might help you be happier (on your down days, you write it all out and feel better).
 
-(Or it ends up being dumb and useless for you haha. Find out for yourself!)
 
 The app itself:
 
