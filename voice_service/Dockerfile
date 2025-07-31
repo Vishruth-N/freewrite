@@ -36,8 +36,15 @@ COPY . .
 # Based on your agent.py, you use Silero VAD and potentially other models
 RUN python agent.py download-files
 
-# Expose healthcheck port (LiveKit agents typically use 8081)
-EXPOSE 8081
+# Expose port 8080 for token server (Render will use this)
+# Port 8081 is for agent health checks (internal only)
+EXPOSE 8080
 
-# Run the agent
-CMD ["python", "agent.py", "start"]
+# Create a startup script to run both services
+RUN echo '#!/bin/bash\n\
+python server.py &\n\
+python agent.py start\n\
+' > /home/appuser/start.sh && chmod +x /home/appuser/start.sh
+
+# Run both services
+CMD ["/home/appuser/start.sh"]
