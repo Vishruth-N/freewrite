@@ -1,4 +1,4 @@
 #include ".env.xcconfig"
 
-PRODUCT_BUNDLE_IDENTIFIER=com.livekit.example.VoiceAssistant
-DEVELOPMENT_TEAM = 76TVFCUKK7;
+PRODUCT_BUNDLE_IDENTIFIER=app.humansongs.spillitout
+DEVELOPMENT_TEAM = J5U55XWJL6;
