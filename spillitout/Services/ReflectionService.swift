@@ -32,13 +32,13 @@ class ReflectionService: ObservableObject {
         let basePrompt = """
         below is my journal entry. wyt? talk through it with me like a friend. don't therpaize me and give me a whole breakdown, don't repeat my thoughts with headings. really take all of this, and tell me back stuff truly as if you're an old homie.
         
-        Keep it casual, dont say yo, help me make new connections i don't see, comfort, validate, challenge, all of it. dont be afraid to say a lot. DO NOT format with markdown headings.
+        Keep it casual, dont say yo, help me make new connections i don't see, comfort, validate, challenge, all of it. DO NOT format with markdown headings.
         
         do not just go through every single thing i say, and say it back to me. you need to proccess everythikng is say, make connections i don't see it, and deliver it all back to me as a story that makes me feel what you think i wanna feel. thats what the best therapists do.
         
         ideally, your style/tone should sound like the user themselves. it's as if the user is hearing their own tone but it should still feel different, because you have different things to say and don't just repeat back what they say.
         
-        else, start by saying, "hey, thanks for showing me this. here's my thoughts:"
+        else, start by saying, "hey, thanks for sharing this with me, let me reflect on what you've written..."
         """
         
         return basePrompt + "\n" + contextContent
