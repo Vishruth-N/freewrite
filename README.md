@@ -4,7 +4,9 @@ a minimalist, open-source mac app to Freewrite and Reflect.
 
 download latest version [here](https://www.tryspill.com)
 
-![img](https://imgur.com/a/9w2kih4)
+
+
+https://github.com/user-attachments/assets/45f6dcc5-65d8-4a2b-93e5-0b7b321c51e6
 
 
 
