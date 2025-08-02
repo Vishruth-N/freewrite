@@ -49,82 +49,11 @@ cd voice_service
 python agent.py start
 ```
 
-## Production Deployment
-
-### Deploy Token Server to Render.com
-
-1. **Create a new Web Service** on [Render.com](https://render.com)
-2. **Connect your repository** containing the voice_service folder
-3. **Configure the service:**
-   - **Root Directory**: `voice_service`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python server.py`
-   - **Port**: `8080`
-
-4. **Set Environment Variables** in Render dashboard:
-   ```
-   LIVEKIT_API_KEY=your_livekit_api_key
-   LIVEKIT_API_SECRET=your_livekit_api_secret
-   LIVEKIT_URL=wss://your-project-XXXXXXXX.livekit.cloud
-   PORT=8080
-   ```
-
-5. **Deploy** and get your token server URL (e.g., `https://your-app.onrender.com`)
-
-### Update Your Swift App
-
-Once deployed, update your `TokenService.swift` to use your production server:
-
-```swift
-private let productionServerUrl: String = "https://your-app.onrender.com"
-
-private func fetchConnectionDetailsFromProduction(roomName: String, participantName: String) async throws -> ConnectionDetails? {
-    var urlComponents = URLComponents(string: "\(productionServerUrl)/getToken")!
-    urlComponents.queryItems = [
-        URLQueryItem(name: "roomName", value: roomName),
-        URLQueryItem(name: "participantName", value: participantName),
-    ]
-    
-    let request = URLRequest(url: urlComponents.url!)
-    let (data, response) = try await URLSession.shared.data(for: request)
-    
-    // Handle response...
-}
-```
 
 ### Deploy Voice Agent to LiveKit Cloud
 
 The voice agent (`agent.py`) should be deployed separately using LiveKit Cloud or your own infrastructure. Follow the [LiveKit Agents deployment guide](https://docs.livekit.io/agents/deployment/).
 
-## API Endpoints
-
-### GET /getToken
-Generate a token using query parameters:
-```
-GET /getToken?roomName=my-room&participantName=John&participantIdentity=user123
-```
-
-### POST /getToken
-Generate a token using JSON body:
-```json
-{
-  "roomName": "my-room",
-  "participantName": "John", 
-  "participantIdentity": "user123"
-}
-```
-
-Both return:
-```json
-{
-  "serverUrl": "wss://your-project-XXXXXXXX.livekit.cloud",
-  "roomName": "my-room",
-  "participantName": "John",
-  "participantToken": "eyJhbGc..."
-}
-```
-- **Multi-language Support**: Uses Deepgram's nova-3 model with multilingual support
-- **Turn Detection**: Automatic conversation flow management
 
 ## Architecture
 
@@ -136,4 +65,4 @@ Both return:
 
 ## Integration with Spillitout App
 
-The voice service runs independently and can be integrated with the main Spillitout macOS app through WebRTC connections to the Livekit room. 
+The voice service runs independently and can be integrated with the main macOS app through WebRTC connections to the Livekit room. 
