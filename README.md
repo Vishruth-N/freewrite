@@ -6,7 +6,7 @@ download latest version [here](https://www.tryspill.com)
 
 
 
-https://github.com/user-attachments/assets/45f6dcc5-65d8-4a2b-93e5-0b7b321c51e6
+https://github.com/user-attachments/assets/59fe0b81-7497-4c2e-866f-e5359a45205d
 
 
 
