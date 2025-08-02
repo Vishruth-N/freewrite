@@ -1,14 +1,14 @@
-# hi, this is spillitout
+# hi, this is Spill
 
-a simple, open-source mac app to spill it out.
+a minimalist, open-source mac app to Freewrite and Reflect.
 
-download latest version [here](https://www.spillitout.io/)
+download latest version [here](https://www.tryspill.com)
 
 ![img](https://i.imgur.com/2ucbtff.gif)
 
 ## Features
 
-- **Spilling it out**: Simple, distraction-free writing environment
+- **Text Editor**: Simple, distraction-free writing environment
 - **Reflect**: Voice AI assistant to chat about your journals (powered by Livekit Agents)
 
 ## Getting Started
@@ -27,4 +27,4 @@ or just wanna remix the app for yourself go for it.
 
 The reflect feature uses a Python-based voice service. See [`voice_service/README.md`](voice_service/README.md) for setup instructions.
 
-make changes on a pr and i'll run on my end and then build a new version :).
+make changes on a pr and we'll run on my end and then build a new version :).
