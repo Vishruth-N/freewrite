@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct TimerButtonView: View {
     @Binding var timeRemaining: Int
@@ -9,7 +10,7 @@ struct TimerButtonView: View {
     @Environment(\.colorScheme) var colorScheme
     
     private var timerButtonTitle: String {
-        if !timerIsRunning && timeRemaining == AppSettings.defaultTimerDuration {
+        if !timerIsRunning && timeRemaining == 900 {
             return "15:00"
         }
         let minutes = timeRemaining / 60
@@ -30,7 +31,7 @@ struct TimerButtonView: View {
             let now = Date()
             if let lastClick = lastClickTime,
                now.timeIntervalSince(lastClick) < 0.3 {
-                timeRemaining = AppSettings.defaultTimerDuration
+                timeRemaining = 900
                 timerIsRunning = false
                 lastClickTime = nil
             } else {
@@ -41,6 +42,7 @@ struct TimerButtonView: View {
         .buttonStyle(.plain)
         .foregroundColor(timerColor)
         .scaleEffect(timerZoomScale)
+        .help(timerIsRunning ? "Click to pause timer, double-click to reset" : "Click to start timer, scroll to adjust time")
         .onHover { hovering in
             isHovering = hovering
             if hovering {
@@ -71,7 +73,7 @@ struct TimerButtonView: View {
                     let direction = -scrollBuffer > 0 ? 1 : -1
                     let newMinutes = currentMinutes + direction
                     let newTime = newMinutes * 60
-                    timeRemaining = min(max(newTime, 0), AppSettings.maxTimerDuration)
+                    timeRemaining = min(max(newTime, 0), 3600)
                     
                     // Add zoom pulse effect when scrolling
                     withAnimation(.easeInOut(duration: 0.15)) {
@@ -87,4 +89,4 @@ struct TimerButtonView: View {
             return event
         }
     }
-} 
+}

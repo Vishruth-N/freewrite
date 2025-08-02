@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct UtilityButtonsSection: View {
     @Binding var timeRemaining: Int
@@ -36,6 +37,7 @@ struct UtilityButtonsSection: View {
                     .foregroundColor(isHoveringReflect ? textHoverColor : textColor)
             }
             .buttonStyle(.plain)
+            .help("Generate AI reflections on your writing")
             .onHover { hovering in
                 isHoveringReflect = hovering
                 onBottomNavHover(hovering)
@@ -60,6 +62,7 @@ struct UtilityButtonsSection: View {
             }
             .buttonStyle(.plain)
             .foregroundColor(isHoveringNewEntry ? textHoverColor : textColor)
+            .help("Start a new writing entry")
             .onHover { hovering in
                 isHoveringNewEntry = hovering
                 onBottomNavHover(hovering)
@@ -80,6 +83,7 @@ struct UtilityButtonsSection: View {
                     .foregroundColor(isHoveringThemeToggle ? textHoverColor : textColor)
             }
             .buttonStyle(.plain)
+            .help(colorScheme == .light ? "Switch to dark mode" : "Switch to light mode")
             .onHover { hovering in
                 isHoveringThemeToggle = hovering
                 onBottomNavHover(hovering)
@@ -104,6 +108,7 @@ struct UtilityButtonsSection: View {
                     .foregroundColor(speechService.isRecording ? .red : (isHoveringDictation ? textHoverColor : textColor))
             }
             .buttonStyle(.plain)
+            .help(speechService.isRecording ? "Stop voice dictation" : "Start voice dictation")
             .onHover { hovering in
                 isHoveringDictation = hovering
                 onBottomNavHover(hovering)
@@ -124,6 +129,7 @@ struct UtilityButtonsSection: View {
                     .foregroundColor(backspaceService.isBackspaceDisabled ? .orange : (isHoveringBackspace ? textHoverColor : textColor))
             }
             .buttonStyle(.plain)
+            .help(backspaceService.isBackspaceDisabled ? "Enable backspace key" : "Disable backspace key")
             .onHover { hovering in
                 isHoveringBackspace = hovering
                 onBottomNavHover(hovering)
@@ -146,6 +152,7 @@ struct UtilityButtonsSection: View {
                     .foregroundColor(isHoveringClock ? textHoverColor : textColor)
             }
             .buttonStyle(.plain)
+            .help(showingSidebar ? "Hide entry history" : "Show entry history")
             .onHover { hovering in
                 isHoveringClock = hovering
                 onBottomNavHover(hovering)
@@ -162,4 +169,4 @@ struct UtilityButtonsSection: View {
             onBottomNavHover(hovering)
         }
     }
-} 
+}

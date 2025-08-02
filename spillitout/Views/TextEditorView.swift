@@ -80,7 +80,7 @@ struct TextEditorView: View {
                     .font(.custom(selectedFont, size: fontSize))
                     .foregroundColor(placeholderColor)
                     .allowsHitTesting(false)
-                    .padding(.leading, 10)
+                    .padding(.leading, 15)
                     .padding(.top, 40)
             }
         }

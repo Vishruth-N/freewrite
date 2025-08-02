@@ -33,7 +33,13 @@
     "Claude" : {
 
     },
+    "Click to pause timer, double-click to reset" : {
+
+    },
     "Click to select this entry" : {
+
+    },
+    "Click to start timer, scroll to adjust time" : {
 
     },
     "connect.connecting" : {
@@ -89,6 +95,12 @@
     "Delete entry" : {
 
     },
+    "Disable backspace key" : {
+
+    },
+    "Enable backspace key" : {
+
+    },
     "error.ok" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -113,7 +125,13 @@
     "Export as PDF" : {
 
     },
+    "Generate AI reflections on your writing" : {
+
+    },
     "Hey, your entry is long. It'll break the URL. Instead, copy prompt by clicking below and paste into AI of your choice!" : {
+
+    },
+    "Hide entry history" : {
 
     },
     "Initializing..." : {
@@ -145,6 +163,24 @@
 
     },
     "Serif" : {
+
+    },
+    "Show entry history" : {
+
+    },
+    "Start a new writing entry" : {
+
+    },
+    "Start voice dictation" : {
+
+    },
+    "Stop voice dictation" : {
+
+    },
+    "Switch to dark mode" : {
+
+    },
+    "Switch to light mode" : {
 
     },
     "warning.reconnecting" : {

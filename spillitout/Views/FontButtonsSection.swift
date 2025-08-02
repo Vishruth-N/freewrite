@@ -19,6 +19,10 @@ struct FontButtonsSection: View {
         colorScheme == .light ? Color.gray : Color.gray.opacity(0.8)
     }
     
+    private var selectedColor: Color {
+        colorScheme == .light ? Color.black : Color.white
+    }
+    
     var randomButtonTitle: String {
         return currentRandomFont.isEmpty ? "Random" : "Random [\(currentRandomFont)]"
     }
@@ -57,7 +61,7 @@ struct FontButtonsSection: View {
                 currentRandomFont = ""
             }
             .buttonStyle(.plain)
-            .foregroundColor(hoveredFont == "Arial" ? textHoverColor : textColor)
+            .foregroundColor(hoveredFont == "Arial" ? textHoverColor : (selectedFont == "Arial" ? selectedColor : textColor))
             .onHover { hovering in
                 hoveredFont = hovering ? "Arial" : nil
                 isHoveringBottomNav = hovering
@@ -76,7 +80,7 @@ struct FontButtonsSection: View {
                 currentRandomFont = ""
             }
             .buttonStyle(.plain)
-            .foregroundColor(hoveredFont == "Serif" ? textHoverColor : textColor)
+            .foregroundColor(hoveredFont == "Serif" ? textHoverColor : (selectedFont == "Times New Roman" ? selectedColor : textColor))
             .onHover { hovering in
                 hoveredFont = hovering ? "Serif" : nil
                 isHoveringBottomNav = hovering
@@ -97,7 +101,7 @@ struct FontButtonsSection: View {
                 }
             }
             .buttonStyle(.plain)
-            .foregroundColor(hoveredFont == "Random" ? textHoverColor : textColor)
+            .foregroundColor(hoveredFont == "Random" ? textHoverColor : (!currentRandomFont.isEmpty ? selectedColor : textColor))
             .onHover { hovering in
                 hoveredFont = hovering ? "Random" : nil
                 isHoveringBottomNav = hovering
