@@ -1,10 +1,15 @@
-# hi, this is Spill
+# Hi, this is Spill
 
 a minimalist, open-source mac app to Freewrite and Reflect.
 
 download latest version [here](https://www.tryspill.com)
 
-![img](https://i.imgur.com/2ucbtff.gif)
+
+<video width="100%" controls>
+  <source src="https://www.tryspill.com/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 
 ## Features
 
