@@ -85,7 +85,7 @@ Bonus features:
 3. Font choice affects our thinking. Emotional stuff gets big Arial. Business ideas get clean serif. Use the random button to find your vibe.
 
 Found bugs? Want features?
-GitHub: https://github.com/repo-link
+GitHub: https://github.com/Vishruth-N/Spill
 
 Join other writers:
 https://spillitout.app (click "join writing")
